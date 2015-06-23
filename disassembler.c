@@ -5,7 +5,7 @@ int disassemble(unsigned char *buffer, int pc)
 {
     unsigned char *code = buffer + pc;
     int opbytes = 1;
-    printf("%04x\t%02x\t", pc, *buffer);
+    printf("%04x\t%02x\t", pc, *code);
     switch (*code) {
         case 0x00: printf("NOP\n"); break;
         case 0x01:
