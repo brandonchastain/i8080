@@ -1,170 +1,114 @@
 00 NOP
 00 NOP
 00 NOP
-c3 opcode not supported.
-d4 opcode not supported.
-18 opcode not supported.
+c3 JMP 18d4
 00 NOP
 00 NOP
-f5 opcode not supported.
-c5 opcode not supported.
-d5 opcode not supported.
-e5 opcode not supported.
-c3 opcode not supported.
-8c opcode not supported.
+f5 PUSH PSW
+c5 PUSH B
+d5 PUSH D
+e5 PUSH H
+c3 JMP 008c
 00 NOP
-00 NOP
-f5 opcode not supported.
-c5 opcode not supported.
-d5 opcode not supported.
-e5 opcode not supported.
+f5 PUSH PSW
+c5 PUSH B
+d5 PUSH D
+e5 PUSH H
 3e MVI A,#$80
 32 STA (0072)
 21 LXI H, #$20c0
 35 DCR M
-cd opcode not supported.
-cd opcode not supported.
-17 RAL
-db opcode not supported.
-01 LXI	B, #$da0f
-67 MOV H,A
-00 NOP
+cd CALL $17cd
+db IN 01
+0f RRC
+da JC $0067
 3a LDA (00ea)
-a7 opcode not supported.
-ca opcode not supported.
-42 MOV B,D
-00 NOP
+a7 ANA A
+ca JZ $0042
 3a LDA (00eb)
-fe opcode not supported.
-99 opcode not supported.
-ca opcode not supported.
-3e MVI A,#$00
-c6 opcode not supported.
-01 LXI	B, #$3227
-eb opcode not supported.
-20 RIM
-cd opcode not supported.
-47 MOV B,A
-19 DAD D
-af opcode not supported.
+fe CPI 99
+ca JZ $003e
+c6 ADI $01
+27 DAA
+32 STA (00eb)
+cd CALL $1947
+af XRA A
 32 STA (00ea)
 3a LDA (00e9)
-a7 opcode not supported.
-ca opcode not supported.
-82 ADD D
-00 NOP
+a7 ANA A
+ca JZ $0082
 3a LDA (00ef)
-a7 opcode not supported.
-c2 opcode not supported.
-6f MOV L,A
-00 NOP
+a7 ANA A
+c2 JNZ 006f
 3a LDA (00eb)
-a7 opcode not supported.
-c2 opcode not supported.
-5d MOV E,L
-00 NOP
-cd opcode not supported.
-bf opcode not supported.
-0a LDAX	B
-c3 opcode not supported.
-82 ADD D
-00 NOP
+a7 ANA A
+c2 JNZ 005d
+cd CALL $0abf
+c3 JMP 0082
 3a LDA (0093)
-a7 opcode not supported.
-c2 opcode not supported.
-82 ADD D
-00 NOP
-c3 opcode not supported.
-65 MOV H,L
-07 RLC
+a7 ANA A
+c2 JNZ 0082
+c3 JMP 0765
 3e MVI A,#$01
 32 STA (00ea)
-c3 opcode not supported.
-3f CMC
-00 NOP
-cd opcode not supported.
-40 MOV B,B
-17 RAL
+c3 JMP 003f
+cd CALL $1740
 3a LDA (0032)
 32 STA (0080)
-cd opcode not supported.
+cd CALL $0100
+cd CALL $0248
+cd CALL $0913
 00 NOP
-01 LXI	B, #$48cd
-02 STAX	B
-cd opcode not supported.
-13 INX	D
-09 DAD	B
-00 NOP
-e1 opcode not supported.
-d1 opcode not supported.
-c1 opcode not supported.
-f1 opcode not supported.
-fb opcode not supported.
-c9 opcode not supported.
+e1 POP H
+d1 POP D
+c1 POP B
+f1 OP PSW
+fb EI
+c9 RET
 00 NOP
 00 NOP
 00 NOP
 00 NOP
-af opcode not supported.
+af XRA A
 32 STA (0072)
 3a LDA (00e9)
-a7 opcode not supported.
-ca opcode not supported.
-82 ADD D
-00 NOP
+a7 ANA A
+ca JZ $0082
 3a LDA (00ef)
-a7 opcode not supported.
-c2 opcode not supported.
-a5 opcode not supported.
-00 NOP
+a7 ANA A
+c2 JNZ 00a5
 3a LDA (00c1)
 0f RRC
-d2 opcode not supported.
-82 ADD D
-00 NOP
+d2 JNC $0082
 21 LXI H, #$2020
-cd opcode not supported.
-4b MOV C,E
-02 STAX	B
-cd opcode not supported.
-41 MOV B,C
-01 LXI	B, #$82c3
-00 NOP
-cd opcode not supported.
-86 ADD M
-08 opcode not supported.
-e5 opcode not supported.
+cd CALL $024b
+cd CALL $0141
+c3 JMP 0082
+cd CALL $0886
+e5 PUSH H
 7e MOV A,M
 23 INX H
 66 MOV H,M
 6f MOV L,A
 22 SHLD (0009)
 22 SHLD (000b)
-e1 opcode not supported.
+e1 POP H
 2b DCX H
 7e MOV A,M
-fe opcode not supported.
-03 INX	B
-c2 opcode not supported.
-c8 opcode not supported.
-00 NOP
+fe CPI 03
+c2 JNZ 00c8
 3d DCR A
 32 STA (0008)
-fe opcode not supported.
-fe opcode not supported.
+fe CPI fe
 3e MVI A,#$00
-c2 opcode not supported.
-d3 opcode not supported.
-00 NOP
+c2 JNZ 00d3
 3c INR A
 32 STA (000d)
-c9 opcode not supported.
+c9 RET
 3e MVI A,#$02
 32 STA (00fb)
 32 STA (00fb)
-c3 opcode not supported.
-e4 opcode not supported.
-08 opcode not supported.
+c3 JMP 08e4
 00 NOP
 00 NOP
 00 NOP
@@ -197,27 +141,23 @@ e4 opcode not supported.
 00 NOP
 21 LXI H, #$2002
 7e MOV A,M
-a7 opcode not supported.
-c2 opcode not supported.
-38 opcode not supported.
-15 DCR	 D
-e5 opcode not supported.
+a7 ANA A
+c2 JNZ 1538
+e5 PUSH H
 3a LDA (0006)
 6f MOV L,A
 3a LDA (0067)
 67 MOV H,A
 7e MOV A,M
-a7 opcode not supported.
-e1 opcode not supported.
-ca opcode not supported.
-36 MVI M, #$01
+a7 ANA A
+e1 POP H
+ca JZ $0136
 23 INX H
 23 INX H
 7e MOV A,M
 23 INX H
 46 MOV B,M
-e6 opcode not supported.
-fe opcode not supported.
+e6 ANI fe
 07 RLC
 07 RLC
 07 RLC
@@ -225,127 +165,106 @@ fe opcode not supported.
 16 MVI	D, #$00
 21 LXI H, #$1c00
 19 DAD D
-eb opcode not supported.
+eb XCHG
 78 MOV A,B
-a7 opcode not supported.
-c4 opcode not supported.
-3b DCX SP
-01 LXI	B, #$0b2a
-20 RIM
+a7 ANA A
+c4 CNZ 013b
+2a LHLD (000b)
 06 MVI	B, 10
-cd opcode not supported.
-d3 opcode not supported.
-15 DCR	 D
-af opcode not supported.
+cd CALL $15d3
+af XRA A
 32 STA (0000)
-c9 opcode not supported.
+c9 RET
 21 LXI H, #$0030
 19 DAD D
-eb opcode not supported.
-c9 opcode not supported.
+eb XCHG
+c9 RET
 3a LDA (0068)
-a7 opcode not supported.
-c8 opcode not supported.
+a7 ANA A
+c8 RZ
 3a LDA (0000)
-a7 opcode not supported.
-c0 opcode not supported.
+a7 ANA A
+c0 RNZ
 3a LDA (0067)
 67 MOV H,A
 3a LDA (0006)
 16 MVI	D, #$02
 3c INR A
-fe opcode not supported.
-37 STC
-cc opcode not supported.
-a1 opcode not supported.
-01 LXI	B, #$466f
+fe CPI 37
+cc CZ $01a1
+6f MOV L,A
+46 MOV B,M
 05 DCR	B
-c2 opcode not supported.
-54 MOV D,H
-01 LXI	B, #$0632
-20 RIM
-cd opcode not supported.
-7a MOV A,D
-01 LXI	B, #$2261
-0b DCX	B
-20 RIM
+c2 JNZ 0154
+32 STA (0006)
+cd CALL $017a
+61 MOV H,C
+22 SHLD (000b)
 7d MOV A,L
-fe opcode not supported.
-28 opcode not supported.
-da opcode not supported.
-71 MOV M,C
-19 DAD D
+fe CPI 28
+da JC $1971
 7a MOV A,D
 32 STA (0004)
 3e MVI A,#$01
 32 STA (0000)
-c9 opcode not supported.
+c9 RET
 16 MVI	D, #$00
 7d MOV A,L
 21 LXI H, #$2009
 46 MOV B,M
 23 INX H
 4e MOV C,M
-fe opcode not supported.
-0b DCX	B
-fa opcode not supported.
-94 opcode not supported.
-01 LXI	B, #$0bde
+fe CPI 0b
+fa JM $0194
+de SBI 0b
 5f MOV E,A
 78 MOV A,B
-c6 opcode not supported.
-10 opcode not supported.
+c6 ADI $10
 47 MOV B,A
 7b MOV A,E
 14 INR	D
-c3 opcode not supported.
-83 ADD E
-01 LXI	B, #$a768
-c8 opcode not supported.
+c3 JMP 0183
+68 MOV L,B
+a7 ANA A
+c8 RZ
 5f MOV E,A
 79 MOV A,C
-c6 opcode not supported.
-10 opcode not supported.
+c6 ADI $10
 4f MOV C,A
 7b MOV A,E
 3d DCR A
-c3 opcode not supported.
-95 opcode not supported.
-01 LXI	B, #$ca15
-cd opcode not supported.
-01 LXI	B, #$0621
-20 RIM
+c3 JMP 0195
+15 DCR	 D
+ca JZ $01cd
+21 LXI H, #$2006
 36 MVI M, #$00
 23 INX H
 4e MOV C,M
 36 MVI M, #$00
-cd opcode not supported.
-d9 opcode not supported.
-01 LXI	B, #$0521
-20 RIM
+cd CALL $01d9
+21 LXI H, #$2005
 7e MOV A,M
 3c INR A
-e6 opcode not supported.
-01 LXI	B, #$af77
+e6 ANI 01
+77 MOV M,A
+af XRA A
 21 LXI H, #$2067
 66 MOV H,M
-c9 opcode not supported.
+c9 RET
 00 NOP
 21 LXI H, #$2100
 06 MVI	B, 37
 36 MVI M, #$01
 23 INX H
 05 DCR	B
-c2 opcode not supported.
-c5 opcode not supported.
-01 LXI	B, #$e1c9
-c9 opcode not supported.
+c2 JNZ 01c5
+c9 RET
+e1 POP H
+c9 RET
 3e MVI A,#$01
 06 MVI	B, e0
 21 LXI H, #$2402
-c3 opcode not supported.
-cc opcode not supported.
-14 INR	D
+c3 JMP 14cc
 23 INX H
 46 MOV B,M
 23 INX H
@@ -356,114 +275,87 @@ cc opcode not supported.
 78 MOV A,B
 86 ADD M
 77 MOV M,A
-c9 opcode not supported.
+c9 RET
 06 MVI	B, c0
 11 LXI	D, #$1b00
 21 LXI H, #$2000
-c3 opcode not supported.
-32 STA (001a)
-42 MOV B,D
-21 LXI H, #$f8c3
-01 LXI	B, #$4221
-22 SHLD (000e)
+c3 JMP 1a32
+21 LXI H, #$2142
+c3 JMP 01f8
+21 LXI H, #$2242
+0e MVI	C, 04
 11 LXI	D, #$1d20
-d5 opcode not supported.
+d5 PUSH D
 06 MVI	B, 2c
-cd opcode not supported.
-32 STA (001a)
+cd CALL $1a32
+d1 POP D
 0d DCR	C
-c2 opcode not supported.
-fd opcode not supported.
-01 LXI	B, #$3ec9
-01 LXI	B, #$1bc3
-02 STAX	B
+c2 JNZ 01fd
+c9 RET
 3e MVI A,#$01
-c3 opcode not supported.
-14 INR	D
-02 STAX	B
-af opcode not supported.
+c3 JMP 021b
+3e MVI A,#$01
+c3 JMP 0214
+af XRA A
 11 LXI	D, #$2242
-c3 opcode not supported.
-1e MVI E, #$02
-af opcode not supported.
+c3 JMP 021e
+af XRA A
 11 LXI	D, #$2142
 32 STA (0081)
 01 LXI	B, #$1602
 21 LXI H, #$2806
 3e MVI A,#$04
-f5 opcode not supported.
-c5 opcode not supported.
+f5 PUSH PSW
+c5 PUSH B
 3a LDA (0081)
-a7 opcode not supported.
-c2 opcode not supported.
-42 MOV B,D
-02 STAX	B
-cd opcode not supported.
-69 MOV L,C
-1a LDAX D
-c1 opcode not supported.
-f1 opcode not supported.
+a7 ANA A
+c2 JNZ 0242
+cd CALL $1a69
+c1 POP B
+f1 OP PSW
 3d DCR A
-c8 opcode not supported.
-d5 opcode not supported.
+c8 RZ
+d5 PUSH D
 11 LXI	D, #$02e0
 19 DAD D
-d1 opcode not supported.
-c3 opcode not supported.
-29 DAD H
-02 STAX	B
-cd opcode not supported.
-7c MOV A,H
-14 INR	D
-c3 opcode not supported.
-35 DCR M
-02 STAX	B
+d1 POP D
+c3 JMP 0229
+cd CALL $147c
+c3 JMP 0235
 21 LXI H, #$2010
 7e MOV A,M
-fe opcode not supported.
-ff opcode not supported.
-c8 opcode not supported.
-fe opcode not supported.
-fe opcode not supported.
-ca opcode not supported.
-81 ADD C
-02 STAX	B
+fe CPI ff
+c8 RZ
+fe CPI fe
+ca JZ $0281
 23 INX H
 46 MOV B,M
 4f MOV C,A
-b0 opcode not supported.
+b0 ORA B
 79 MOV A,C
-c2 opcode not supported.
-77 MOV M,A
-02 STAX	B
+c2 JNZ 0277
 23 INX H
 7e MOV A,M
-a7 opcode not supported.
-c2 opcode not supported.
-88 opcode not supported.
-02 STAX	B
+a7 ANA A
+c2 JNZ 0288
 23 INX H
 5e MOV E,M
 23 INX H
 56 MOV D,M
-e5 opcode not supported.
-eb opcode not supported.
-e5 opcode not supported.
+e5 PUSH H
+eb XCHG
+e5 PUSH H
 21 LXI H, #$026f
-e3 opcode not supported.
-d5 opcode not supported.
-e9 opcode not supported.
-e1 opcode not supported.
+e3 XTHL
+d5 PUSH D
+e9 PCHL
+e1 POP H
 11 LXI	D, #$000c
 19 DAD D
-c3 opcode not supported.
-4b MOV C,E
-02 STAX	B
+c3 JMP 024b
 05 DCR	B
 04 INR	B
-c2 opcode not supported.
-7d MOV A,L
-02 STAX	B
+c2 JNZ 027d
 3d DCR A
 05 DCR	B
 70 MOV M,B
@@ -471,28 +363,21 @@ c2 opcode not supported.
 77 MOV M,A
 11 LXI	D, #$0010
 19 DAD D
-c3 opcode not supported.
-4b MOV C,E
-02 STAX	B
+c3 JMP 024b
 35 DCR M
 2b DCX H
 2b DCX H
-c3 opcode not supported.
-81 ADD C
-02 STAX	B
-e1 opcode not supported.
+c3 JMP 0281
+e1 POP H
 23 INX H
 7e MOV A,M
-fe opcode not supported.
-ff opcode not supported.
-ca opcode not supported.
-3b DCX SP
-03 INX	B
+fe CPI ff
+ca JZ $033b
 23 INX H
 35 DCR M
-c0 opcode not supported.
+c0 RNZ
 47 MOV B,A
-af opcode not supported.
+af XRA A
 32 STA (0068)
 32 STA (0069)
 3e MVI A,#$30
@@ -501,61 +386,41 @@ af opcode not supported.
 36 MVI M, #$05
 23 INX H
 35 DCR M
-c2 opcode not supported.
-9b opcode not supported.
-03 INX	B
+c2 JNZ 039b
 2a LHLD (001a)
 06 MVI	B, 10
-cd opcode not supported.
-24 INR H
-14 INR	D
+cd CALL $1424
 21 LXI H, #$2010
 11 LXI	D, #$1b10
 06 MVI	B, 10
-cd opcode not supported.
-32 STA (001a)
-00 NOP
-cd opcode not supported.
-dc opcode not supported.
-19 DAD D
+cd CALL $1a32
+06 MVI	B, 00
+cd CALL $19dc
 3a LDA (006d)
-a7 opcode not supported.
-c0 opcode not supported.
+a7 ANA A
+c0 RNZ
 3a LDA (00ef)
-a7 opcode not supported.
-c8 opcode not supported.
+a7 ANA A
+c8 RZ
 31 LXI SP,#$2400
-fb opcode not supported.
-cd opcode not supported.
-d7 opcode not supported.
-19 DAD D
-cd opcode not supported.
-2e MVI L, #$09
-a7 opcode not supported.
-ca opcode not supported.
-6d MOV L,L
-16 MVI	D, #$cd
-e7 opcode not supported.
-18 opcode not supported.
+fb EI
+cd CALL $19d7
+cd CALL $092e
+a7 ANA A
+ca JZ $166d
+cd CALL $18e7
 7e MOV A,M
-a7 opcode not supported.
-ca opcode not supported.
-2c INR L
-03 INX	B
+a7 ANA A
+ca JZ $032c
 3a LDA (00ce)
-a7 opcode not supported.
-ca opcode not supported.
-2c INR L
-03 INX	B
+a7 ANA A
+ca JZ $032c
 3a LDA (0067)
-f5 opcode not supported.
+f5 PUSH PSW
 0f RRC
-da opcode not supported.
-32 STA (0003)
-0e MVI	C, 02
-cd opcode not supported.
-78 MOV A,B
-08 opcode not supported.
+da JC $0332
+cd CALL $020e
+cd CALL $0878
 73 MOV M,E
 23 INX H
 72 MOV M,D
@@ -563,48 +428,29 @@ cd opcode not supported.
 2b DCX H
 70 MOV M,B
 00 NOP
-cd opcode not supported.
-e4 opcode not supported.
-01 LXI	B, #$0ff1
+cd CALL $01e4
+f1 OP PSW
+0f RRC
 3e MVI A,#$21
 06 MVI	B, 00
-d2 opcode not supported.
-12 STAX	D
-03 INX	B
+d2 JNC $0312
 06 MVI	B, 20
 3e MVI A,#$22
 32 STA (0067)
-cd opcode not supported.
-b6 opcode not supported.
-0a LDAX	B
-af opcode not supported.
+cd CALL $0ab6
+af XRA A
 32 STA (0011)
 78 MOV A,B
-d3 opcode not supported.
-05 DCR	B
+d3 OUT 05
 3c INR A
 32 STA (0098)
-cd opcode not supported.
-d6 opcode not supported.
-09 DAD	B
-cd opcode not supported.
-7f MOV A,A
-1a LDAX D
-c3 opcode not supported.
-f9 opcode not supported.
-07 RLC
-cd opcode not supported.
-7f MOV A,A
-1a LDAX D
-c3 opcode not supported.
-17 RAL
-08 opcode not supported.
-cd opcode not supported.
-09 DAD	B
-02 STAX	B
-c3 opcode not supported.
-f8 opcode not supported.
-02 STAX	B
+cd CALL $09d6
+cd CALL $1a7f
+c3 JMP 07f9
+cd CALL $1a7f
+c3 JMP 0817
+cd CALL $0209
+c3 JMP 02f8
 00 NOP
 00 NOP
 00 NOP
@@ -612,83 +458,50 @@ f8 opcode not supported.
 36 MVI M, #$01
 23 INX H
 7e MOV A,M
-a7 opcode not supported.
-c3 opcode not supported.
-b0 opcode not supported.
-03 INX	B
+a7 ANA A
+c3 JMP 03b0
 00 NOP
 2b DCX H
 36 MVI M, #$01
 3a LDA (001b)
 47 MOV B,A
 3a LDA (00ef)
-a7 opcode not supported.
-c2 opcode not supported.
-63 MOV H,E
-03 INX	B
+a7 ANA A
+c2 JNZ 0363
 3a LDA (001d)
 0f RRC
-da opcode not supported.
-81 ADD C
-03 INX	B
+da JC $0381
 0f RRC
-da opcode not supported.
-8e opcode not supported.
-03 INX	B
-c3 opcode not supported.
-6f MOV L,A
-03 INX	B
-cd opcode not supported.
-c0 opcode not supported.
-17 RAL
+da JC $038e
+c3 JMP 036f
+cd CALL $17c0
 07 RLC
 07 RLC
-da opcode not supported.
-81 ADD C
-03 INX	B
+da JC $0381
 07 RLC
-da opcode not supported.
-8e opcode not supported.
-03 INX	B
+da JC $038e
 21 LXI H, #$2018
-cd opcode not supported.
-3b DCX SP
-1a LDAX D
-cd opcode not supported.
-47 MOV B,A
-1a LDAX D
-cd opcode not supported.
-39 DAD SP
-14 INR	D
+cd CALL $1a3b
+cd CALL $1a47
+cd CALL $1439
 3e MVI A,#$00
 32 STA (0012)
-c9 opcode not supported.
+c9 RET
 78 MOV A,B
-fe opcode not supported.
-d9 opcode not supported.
-ca opcode not supported.
-6f MOV L,A
-03 INX	B
+fe CPI d9
+ca JZ $036f
 3c INR A
 32 STA (001b)
-c3 opcode not supported.
-6f MOV L,A
-03 INX	B
+c3 JMP 036f
 78 MOV A,B
-fe opcode not supported.
-30 SIM
-ca opcode not supported.
-6f MOV L,A
-03 INX	B
+fe CPI 30
+ca JZ $036f
 3d DCR A
 32 STA (001b)
-c3 opcode not supported.
-6f MOV L,A
-03 INX	B
+c3 JMP 036f
 3c INR A
-e6 opcode not supported.
-01 LXI	B, #$1532
-20 RIM
+e6 ANI 01
+32 STA (0015)
 07 RLC
 07 RLC
 07 RLC
@@ -697,56 +510,36 @@ e6 opcode not supported.
 85 ADD L
 6f MOV L,A
 22 SHLD (0018)
-c3 opcode not supported.
-6f MOV L,A
-03 INX	B
-c2 opcode not supported.
-4a MOV C,D
-03 INX	B
+c3 JMP 036f
+c2 JNZ 034a
 23 INX H
 35 DCR M
-c2 opcode not supported.
-4a MOV C,D
-03 INX	B
-c3 opcode not supported.
-46 MOV B,M
-03 INX	B
+c2 JNZ 034a
+c3 JMP 0346
 11 LXI	D, #$202a
-cd opcode not supported.
-06 MVI	B, 1a
-e1 opcode not supported.
-d0 opcode not supported.
+cd CALL $1a06
+e1 POP H
+d0 RNC
 23 INX H
 7e MOV A,M
-a7 opcode not supported.
-c8 opcode not supported.
-fe opcode not supported.
-01 LXI	B, #$faca
-03 INX	B
-fe opcode not supported.
-02 STAX	B
-ca opcode not supported.
-0a LDAX	B
-04 INR	B
+a7 ANA A
+c8 RZ
+fe CPI 01
+ca JZ $03fa
+fe CPI 02
+ca JZ $040a
 23 INX H
-fe opcode not supported.
-03 INX	B
-c2 opcode not supported.
-2a LHLD (0004)
-ca opcode not supported.
-36 MVI M, #$04
+fe CPI 03
+c2 JNZ 042a
+35 DCR M
+ca JZ $0436
 7e MOV A,M
-fe opcode not supported.
-0f RRC
-c0 opcode not supported.
-e5 opcode not supported.
-cd opcode not supported.
-30 SIM
-04 INR	B
-cd opcode not supported.
-52 MOV D,D
-14 INR	D
-e1 opcode not supported.
+fe CPI 0f
+c0 RNZ
+e5 PUSH H
+cd CALL $0430
+cd CALL $1452
+e1 POP H
 23 INX H
 34 INR M
 23 INX H
@@ -759,405 +552,285 @@ e1 opcode not supported.
 35 DCR M
 23 INX H
 36 MVI M, #$08
-cd opcode not supported.
-30 SIM
-04 INR	B
-c3 opcode not supported.
-00 NOP
-14 INR	D
+cd CALL $0430
+c3 JMP 1400
 3c INR A
 77 MOV M,A
 3a LDA (001b)
-c6 opcode not supported.
-08 opcode not supported.
+c6 ADI $08
 32 STA (002a)
-cd opcode not supported.
-30 SIM
-04 INR	B
-c3 opcode not supported.
-00 NOP
-14 INR	D
-cd opcode not supported.
-30 SIM
-04 INR	B
-d5 opcode not supported.
-e5 opcode not supported.
-c5 opcode not supported.
-cd opcode not supported.
-52 MOV D,D
-14 INR	D
-c1 opcode not supported.
-e1 opcode not supported.
-d1 opcode not supported.
+cd CALL $0430
+c3 JMP 1400
+cd CALL $0430
+d5 PUSH D
+e5 PUSH H
+c5 PUSH B
+cd CALL $1452
+c1 POP B
+e1 POP H
+d1 POP D
 3a LDA (002c)
 85 ADD L
 6f MOV L,A
 32 STA (0029)
-cd opcode not supported.
-91 opcode not supported.
-14 INR	D
+cd CALL $1491
 3a LDA (0061)
-a7 opcode not supported.
-c8 opcode not supported.
+a7 ANA A
+c8 RZ
 32 STA (0002)
-c9 opcode not supported.
-fe opcode not supported.
-05 DCR	B
-c8 opcode not supported.
-c3 opcode not supported.
-36 MVI M, #$04
+c9 RET
+fe CPI 05
+c8 RZ
+c3 JMP 0436
 21 LXI H, #$2027
-c3 opcode not supported.
-3b DCX SP
-1a LDAX D
-cd opcode not supported.
-30 SIM
-04 INR	B
-cd opcode not supported.
-52 MOV D,D
-14 INR	D
+c3 JMP 1a3b
+cd CALL $0430
+cd CALL $1452
 21 LXI H, #$2025
 11 LXI	D, #$1b25
 06 MVI	B, 07
-cd opcode not supported.
-32 STA (001a)
-8d opcode not supported.
-20 RIM
+cd CALL $1a32
+2a LHLD (008d)
 2c INR L
 7d MOV A,L
-fe opcode not supported.
-63 MOV H,E
-da opcode not supported.
-53 MOV D,E
-04 INR	B
+fe CPI 63
+da JC $0453
 2e MVI L, #$54
 22 SHLD (008d)
 2a LHLD (008f)
 2c INR L
 22 SHLD (008f)
 3a LDA (0084)
-a7 opcode not supported.
-c0 opcode not supported.
+a7 ANA A
+c0 RNZ
 7e MOV A,M
-e6 opcode not supported.
-01 LXI	B, #$2901
-02 STAX	B
-c2 opcode not supported.
-6e MOV L,M
-04 INR	B
+e6 ANI 01
+01 LXI	B, #$0229
+c2 JNZ 046e
 01 LXI	B, #$fee0
 21 LXI H, #$208a
 71 MOV M,C
 23 INX H
 23 INX H
 70 MOV M,B
-c9 opcode not supported.
-e1 opcode not supported.
+c9 RET
+e1 POP H
 3a LDA (0032)
 32 STA (0032)
 2a LHLD (0038)
 7d MOV A,L
-b4 opcode not supported.
-c2 opcode not supported.
-8a opcode not supported.
-04 INR	B
+b4 ORA H
+c2 JNZ 048a
 2b DCX H
 22 SHLD (0038)
-c9 opcode not supported.
+c9 RET
 11 LXI	D, #$2035
 3e MVI A,#$f9
-cd opcode not supported.
-50 MOV D,B
-05 DCR	B
+cd CALL $0550
 3a LDA (0046)
 32 STA (0070)
 3a LDA (0056)
 32 STA (0071)
-cd opcode not supported.
-63 MOV H,E
-05 DCR	B
+cd CALL $0563
 3a LDA (0078)
-a7 opcode not supported.
+a7 ANA A
 21 LXI H, #$2035
-c2 opcode not supported.
-5b MOV E,E
-05 DCR	B
+c2 JNZ 055b
 11 LXI	D, #$1b30
 21 LXI H, #$2030
 06 MVI	B, 10
-c3 opcode not supported.
-32 STA (001a)
+c3 JMP 1a32
+e1 POP H
 3a LDA (006e)
-a7 opcode not supported.
-c0 opcode not supported.
+a7 ANA A
+c0 RNZ
 3a LDA (0080)
-fe opcode not supported.
-01 LXI	B, #$11c0
-45 MOV B,L
-20 RIM
+fe CPI 01
+c0 RNZ
+11 LXI	D, #$2045
 3e MVI A,#$ed
-cd opcode not supported.
-50 MOV D,B
-05 DCR	B
+cd CALL $0550
 3a LDA (0036)
 32 STA (0070)
 3a LDA (0056)
 32 STA (0071)
-cd opcode not supported.
-63 MOV H,E
-05 DCR	B
+cd CALL $0563
 3a LDA (0076)
-fe opcode not supported.
-10 opcode not supported.
-da opcode not supported.
-e7 opcode not supported.
-04 INR	B
+fe CPI 10
+da JC $04e7
 3a LDA (0048)
 32 STA (0076)
 3a LDA (0078)
-a7 opcode not supported.
+a7 ANA A
 21 LXI H, #$2045
-c2 opcode not supported.
-5b MOV E,E
-05 DCR	B
+c2 JNZ 055b
 11 LXI	D, #$1b40
 21 LXI H, #$2040
 06 MVI	B, 10
-cd opcode not supported.
-32 STA (001a)
-82 ADD D
-20 RIM
+cd CALL $1a32
+3a LDA (0082)
 3d DCR A
-c2 opcode not supported.
-08 opcode not supported.
-05 DCR	B
+c2 JNZ 0508
 3e MVI A,#$01
 32 STA (006e)
 2a LHLD (0076)
-c3 opcode not supported.
-7e MOV A,M
-06 MVI	B, e1
+c3 JMP 067e
+e1 POP H
 11 LXI	D, #$2055
 3e MVI A,#$db
-cd opcode not supported.
-50 MOV D,B
-05 DCR	B
+cd CALL $0550
 3a LDA (0046)
 32 STA (0070)
 3a LDA (0036)
 32 STA (0071)
-cd opcode not supported.
-63 MOV H,E
-05 DCR	B
+cd CALL $0563
 3a LDA (0076)
-fe opcode not supported.
-15 DCR	 D
-da opcode not supported.
-34 INR M
-05 DCR	B
+fe CPI 15
+da JC $0534
 3a LDA (0058)
 32 STA (0076)
 3a LDA (0078)
-a7 opcode not supported.
+a7 ANA A
 21 LXI H, #$2055
-c2 opcode not supported.
-5b MOV E,E
-05 DCR	B
+c2 JNZ 055b
 11 LXI	D, #$1b50
 21 LXI H, #$2050
 06 MVI	B, 10
-cd opcode not supported.
-32 STA (001a)
-76 HLT
-20 RIM
+cd CALL $1a32
+2a LHLD (0076)
 22 SHLD (0058)
-c9 opcode not supported.
+c9 RET
 32 STA (007f)
 21 LXI H, #$2073
 06 MVI	B, 0b
-c3 opcode not supported.
-32 STA (001a)
-73 MOV M,E
-20 RIM
+c3 JMP 1a32
+11 LXI	D, #$2073
 06 MVI	B, 0b
-c3 opcode not supported.
-32 STA (001a)
-73 MOV M,E
-20 RIM
+c3 JMP 1a32
+21 LXI H, #$2073
 7e MOV A,M
-e6 opcode not supported.
-80 ADD B
-c2 opcode not supported.
-c1 opcode not supported.
-05 DCR	B
+e6 ANI 80
+c2 JNZ 05c1
 3a LDA (00c1)
-fe opcode not supported.
-04 INR	B
+fe CPI 04
 3a LDA (0069)
-ca opcode not supported.
-b7 opcode not supported.
-05 DCR	B
-a7 opcode not supported.
-c8 opcode not supported.
+ca JZ $05b7
+a7 ANA A
+c8 RZ
 23 INX H
 36 MVI M, #$00
 3a LDA (0070)
-a7 opcode not supported.
-ca opcode not supported.
-89 opcode not supported.
-05 DCR	B
+a7 ANA A
+ca JZ $0589
 47 MOV B,A
 3a LDA (00cf)
-b8 opcode not supported.
-d0 opcode not supported.
+b8 CMP B
+d0 RNC
 3a LDA (0071)
-a7 opcode not supported.
-ca opcode not supported.
-96 opcode not supported.
-05 DCR	B
+a7 ANA A
+ca JZ $0596
 47 MOV B,A
 3a LDA (00cf)
-b8 opcode not supported.
-d0 opcode not supported.
+b8 CMP B
+d0 RNC
 23 INX H
 7e MOV A,M
-a7 opcode not supported.
-ca opcode not supported.
-1b DCX D
-06 MVI	B, 2a
-76 HLT
-20 RIM
+a7 ANA A
+ca JZ $061b
+2a LHLD (0076)
 4e MOV C,M
 23 INX H
 00 NOP
 22 SHLD (0076)
-cd opcode not supported.
-2f CMA
-06 MVI	B, d0
-cd opcode not supported.
-7a MOV A,D
-01 LXI	B, #$c679
-07 RLC
+cd CALL $062f
+d0 RNC
+cd CALL $017a
+79 MOV A,C
+c6 ADI $07
 67 MOV H,A
 7d MOV A,L
-d6 opcode not supported.
-0a LDAX	B
+d6 SUI 0a
 6f MOV L,A
 22 SHLD (007b)
 21 LXI H, #$2073
 7e MOV A,M
-f6 opcode not supported.
-80 ADD B
+f6 ORI 80
 77 MOV M,A
 23 INX H
 34 INR M
-c9 opcode not supported.
+c9 RET
 11 LXI	D, #$207c
-cd opcode not supported.
-06 MVI	B, 1a
-d0 opcode not supported.
+cd CALL $1a06
+d0 RNC
 23 INX H
 7e MOV A,M
-e6 opcode not supported.
-01 LXI	B, #$44c2
-06 MVI	B, 23
+e6 ANI 01
+c2 JNZ 0644
+23 INX H
 34 INR M
-cd opcode not supported.
-75 MOV M,L
-06 MVI	B, 3a
-79 MOV A,C
-20 RIM
-c6 opcode not supported.
-03 INX	B
+cd CALL $0675
+3a LDA (0079)
+c6 ADI $03
 21 LXI H, #$207f
-be opcode not supported.
-da opcode not supported.
-e2 opcode not supported.
-05 DCR	B
-d6 opcode not supported.
-0c INR	C
+be CMP M
+da JC $05e2
+d6 SUI 0c
 32 STA (0079)
 3a LDA (007b)
 47 MOV B,A
 3a LDA (007e)
 80 ADD B
 32 STA (007b)
-cd opcode not supported.
-6c MOV L,H
-06 MVI	B, 3a
-7b MOV A,E
-20 RIM
-fe opcode not supported.
-15 DCR	 D
-da opcode not supported.
-12 STAX	D
-06 MVI	B, 3a
-61 MOV H,C
-20 RIM
-a7 opcode not supported.
-c8 opcode not supported.
+cd CALL $066c
 3a LDA (007b)
-fe opcode not supported.
-1e MVI E, #$da
-12 STAX	D
-06 MVI	B, fe
-27 DAA
+fe CPI 15
+da JC $0612
+3a LDA (0061)
+a7 ANA A
+c8 RZ
+3a LDA (007b)
+fe CPI 1e
+da JC $0612
+fe CPI 27
 00 NOP
-d2 opcode not supported.
-12 STAX	D
-06 MVI	B, 97
+d2 JNC $0612
+97 SUB A
 32 STA (0015)
 3a LDA (0073)
-f6 opcode not supported.
-01 LXI	B, #$7332
-20 RIM
-c9 opcode not supported.
+f6 ORI 01
+32 STA (0073)
+c9 RET
 3a LDA (001b)
-c6 opcode not supported.
-08 opcode not supported.
+c6 ADI $08
 67 MOV H,A
-cd opcode not supported.
-6f MOV L,A
-15 DCR	 D
+cd CALL $156f
 79 MOV A,C
-fe opcode not supported.
-0c INR	C
-da opcode not supported.
-a5 opcode not supported.
-05 DCR	B
+fe CPI 0c
+da JC $05a5
 0e MVI	C, 0b
-c3 opcode not supported.
-a5 opcode not supported.
-05 DCR	B
+c3 JMP 05a5
 0d DCR	C
 3a LDA (0067)
 67 MOV H,A
 69 MOV L,C
 16 MVI	D, #$05
 7e MOV A,M
-a7 opcode not supported.
+a7 ANA A
 37 STC
-c0 opcode not supported.
+c0 RNZ
 7d MOV A,L
-c6 opcode not supported.
-0b DCX	B
+c6 ADI $0b
 6f MOV L,A
 15 DCR	 D
-c2 opcode not supported.
-37 STC
-06 MVI	B, c9
+c2 JNZ 0637
+c9 RET
 21 LXI H, #$2078
 35 DCR M
 7e MOV A,M
-fe opcode not supported.
-03 INX	B
-c2 opcode not supported.
-67 MOV H,A
-06 MVI	B, cd
-75 MOV M,L
-06 MVI	B, 21
-dc opcode not supported.
-1c INR E
+fe CPI 03
+c2 JNZ 0667
+cd CALL $0675
+21 LXI H, #$1cdc
 22 SHLD (0079)
 21 LXI H, #$207c
 35 DCR M
@@ -1167,140 +840,87 @@ dc opcode not supported.
 35 DCR M
 3e MVI A,#$06
 32 STA (007d)
-c3 opcode not supported.
-6c MOV L,H
-06 MVI	B, a7
-c0 opcode not supported.
-c3 opcode not supported.
-75 MOV M,L
-06 MVI	B, 21
-79 MOV A,C
-20 RIM
-cd opcode not supported.
-3b DCX SP
-1a LDAX D
-c3 opcode not supported.
-91 opcode not supported.
-14 INR	D
+c3 JMP 066c
+a7 ANA A
+c0 RNZ
+c3 JMP 0675
 21 LXI H, #$2079
-cd opcode not supported.
-3b DCX SP
-1a LDAX D
-c3 opcode not supported.
-52 MOV D,D
-14 INR	D
+cd CALL $1a3b
+c3 JMP 1491
+21 LXI H, #$2079
+cd CALL $1a3b
+c3 JMP 1452
 22 SHLD (0048)
-c9 opcode not supported.
-e1 opcode not supported.
+c9 RET
+e1 POP H
 3a LDA (0080)
-fe opcode not supported.
-02 STAX	B
-c0 opcode not supported.
+fe CPI 02
+c0 RNZ
 21 LXI H, #$2083
 7e MOV A,M
-a7 opcode not supported.
-ca opcode not supported.
-0f RRC
-05 DCR	B
+a7 ANA A
+ca JZ $050f
 3a LDA (0056)
-a7 opcode not supported.
-c2 opcode not supported.
-0f RRC
-05 DCR	B
+a7 ANA A
+c2 JNZ 050f
 23 INX H
 7e MOV A,M
-a7 opcode not supported.
-c2 opcode not supported.
-ab opcode not supported.
-06 MVI	B, 3a
-82 ADD D
-20 RIM
-fe opcode not supported.
-08 opcode not supported.
-da opcode not supported.
-0f RRC
-05 DCR	B
+a7 ANA A
+c2 JNZ 06ab
+3a LDA (0082)
+fe CPI 08
+da JC $050f
 36 MVI M, #$01
-cd opcode not supported.
-3c INR A
-07 RLC
+cd CALL $073c
 11 LXI	D, #$208a
-cd opcode not supported.
-06 MVI	B, 1a
-d0 opcode not supported.
+cd CALL $1a06
+d0 RNC
 21 LXI H, #$2085
 7e MOV A,M
-a7 opcode not supported.
-c2 opcode not supported.
-d6 opcode not supported.
-06 MVI	B, 21
-8a opcode not supported.
-20 RIM
+a7 ANA A
+c2 JNZ 06d6
+21 LXI H, #$208a
 7e MOV A,M
 23 INX H
 23 INX H
 86 ADD M
 32 STA (008a)
-cd opcode not supported.
-3c INR A
-07 RLC
+cd CALL $073c
 21 LXI H, #$208a
 7e MOV A,M
-fe opcode not supported.
-28 opcode not supported.
-da opcode not supported.
-f9 opcode not supported.
+fe CPI 28
+da JC $06f9
+fe CPI e1
+d2 JNC $06f9
+c9 RET
 06 MVI	B, fe
-e1 opcode not supported.
-d2 opcode not supported.
-f9 opcode not supported.
-06 MVI	B, c9
-06 MVI	B, fe
-cd opcode not supported.
-dc opcode not supported.
-19 DAD D
+cd CALL $19dc
 23 INX H
 35 DCR M
 7e MOV A,M
-fe opcode not supported.
-1f RAR
-ca opcode not supported.
-4b MOV C,E
-07 RLC
-fe opcode not supported.
-18 opcode not supported.
-ca opcode not supported.
-0c INR	C
-07 RLC
-a7 opcode not supported.
-c0 opcode not supported.
+fe CPI 1f
+ca JZ $074b
+fe CPI 18
+ca JZ $070c
+a7 ANA A
+c0 RNZ
 06 MVI	B, ef
 21 LXI H, #$2098
 7e MOV A,M
-a0 opcode not supported.
+a0 ANA B
 77 MOV M,A
-e6 opcode not supported.
-20 RIM
-d3 opcode not supported.
-05 DCR	B
+e6 ANI 20
+d3 OUT 05
 00 NOP
 00 NOP
 00 NOP
-cd opcode not supported.
-42 MOV B,D
-07 RLC
-cd opcode not supported.
-cb opcode not supported.
-14 INR	D
+cd CALL $0742
+cd CALL $14cb
 21 LXI H, #$2083
 06 MVI	B, 0a
-cd opcode not supported.
-5f MOV E,A
-07 RLC
+cd CALL $075f
 06 MVI	B, fe
-c3 opcode not supported.
-dc opcode not supported.
-19 DAD D
+c3 JMP 19dc
 3e MVI A,#$01
 32 STA (00f1)
 2a LHLD (008d)
@@ -1309,16 +929,12 @@ dc opcode not supported.
 21 LXI H, #$1d50
 11 LXI	D, #$1d4c
 1a LDAX D
-b8 opcode not supported.
-ca opcode not supported.
-28 opcode not supported.
-07 RLC
+b8 CMP B
+ca JZ $0728
 23 INX H
 13 INX	D
 0d DCR	C
-c2 opcode not supported.
-1d DCR E
-07 RLC
+c2 JNZ 071d
 7e MOV A,M
 32 STA (0087)
 26 MVI H, #$00
@@ -1328,444 +944,282 @@ c2 opcode not supported.
 29 DAD H
 29 DAD H
 22 SHLD (00f2)
-cd opcode not supported.
-42 MOV B,D
-07 RLC
-c3 opcode not supported.
-f1 opcode not supported.
-08 opcode not supported.
-cd opcode not supported.
-42 MOV B,D
-07 RLC
-c3 opcode not supported.
-39 DAD SP
-14 INR	D
+cd CALL $0742
+c3 JMP 08f1
+cd CALL $0742
+c3 JMP 1439
 21 LXI H, #$2087
-cd opcode not supported.
-3b DCX SP
-1a LDAX D
-c3 opcode not supported.
-47 MOV B,A
-1a LDAX D
+cd CALL $1a3b
+c3 JMP 1a47
 06 MVI	B, 10
 21 LXI H, #$2098
 7e MOV A,M
-b0 opcode not supported.
+b0 ORA B
 77 MOV M,A
-cd opcode not supported.
-70 MOV M,B
-17 RAL
+cd CALL $1770
 21 LXI H, #$1d7c
 22 SHLD (0087)
-c3 opcode not supported.
-3c INR A
-07 RLC
+c3 JMP 073c
 11 LXI	D, #$1b83
-c3 opcode not supported.
-32 STA (001a)
-01 LXI	B, #$9332
-20 RIM
+c3 JMP 1a32
+3e MVI A,#$01
+32 STA (0093)
 31 LXI SP,#$2400
-fb opcode not supported.
-cd opcode not supported.
-79 MOV A,C
-19 DAD D
-cd opcode not supported.
-d6 opcode not supported.
-09 DAD	B
+fb EI
+cd CALL $1979
+cd CALL $09d6
 21 LXI H, #$3013
 11 LXI	D, #$1ff3
 0e MVI	C, 04
-cd opcode not supported.
-f3 opcode not supported.
-08 opcode not supported.
+cd CALL $08f3
 3a LDA (00eb)
 3d DCR A
 21 LXI H, #$2810
 0e MVI	C, 14
-c2 opcode not supported.
-57 MOV D,A
-08 opcode not supported.
+c2 JNZ 0857
 11 LXI	D, #$1acf
-cd opcode not supported.
-f3 opcode not supported.
-08 opcode not supported.
-db opcode not supported.
-01 LXI	B, #$04e6
-ca opcode not supported.
-7f MOV A,A
-07 RLC
+cd CALL $08f3
+db IN 01
+e6 ANI 04
+ca JZ $077f
 06 MVI	B, 99
-af opcode not supported.
+af XRA A
 32 STA (00ce)
 3a LDA (00eb)
 80 ADD B
 27 DAA
 32 STA (00eb)
-cd opcode not supported.
-47 MOV B,A
-19 DAD D
+cd CALL $1947
 21 LXI H, #$0000
 22 SHLD (00f8)
 22 SHLD (00fc)
-cd opcode not supported.
-25 DCR H
-19 DAD D
-cd opcode not supported.
-2b DCX H
-19 DAD D
-cd opcode not supported.
-d7 opcode not supported.
-19 DAD D
+cd CALL $1925
+cd CALL $192b
+cd CALL $19d7
 21 LXI H, #$0101
 7c MOV A,H
 32 STA (00ef)
 22 SHLD (00e7)
 22 SHLD (00e5)
-cd opcode not supported.
-56 MOV D,M
-19 DAD D
-cd opcode not supported.
-ef opcode not supported.
-01 LXI	B, #$f5cd
-01 LXI	B, #$d1cd
-08 opcode not supported.
+cd CALL $1956
+cd CALL $01ef
+cd CALL $01f5
+cd CALL $08d1
 32 STA (00ff)
 32 STA (00ff)
-cd opcode not supported.
-d7 opcode not supported.
-00 NOP
-af opcode not supported.
+cd CALL $00d7
+af XRA A
 32 STA (00fe)
 32 STA (00fe)
-cd opcode not supported.
-c0 opcode not supported.
-01 LXI	B, #$04cd
-19 DAD D
+cd CALL $01c0
+cd CALL $1904
 21 LXI H, #$3878
 22 SHLD (00fc)
 22 SHLD (00fc)
-cd opcode not supported.
-e4 opcode not supported.
-01 LXI	B, #$7fcd
-1a LDAX D
-cd opcode not supported.
-8d opcode not supported.
-08 opcode not supported.
-cd opcode not supported.
-d6 opcode not supported.
-09 DAD	B
+cd CALL $01e4
+cd CALL $1a7f
+cd CALL $088d
+cd CALL $09d6
 00 NOP
-af opcode not supported.
+af XRA A
 32 STA (00c1)
-cd opcode not supported.
-cf opcode not supported.
-01 LXI	B, #$673a
-20 RIM
+cd CALL $01cf
+3a LDA (0067)
 0f RRC
-da opcode not supported.
-72 MOV M,D
-08 opcode not supported.
-cd opcode not supported.
-13 INX	D
-02 STAX	B
-cd opcode not supported.
-cf opcode not supported.
-01 LXI	B, #$b1cd
-00 NOP
-cd opcode not supported.
-d1 opcode not supported.
-19 DAD D
+da JC $0872
+cd CALL $0213
+cd CALL $01cf
+cd CALL $00b1
+cd CALL $19d1
 06 MVI	B, 20
-cd opcode not supported.
-fa opcode not supported.
-18 opcode not supported.
-cd opcode not supported.
-18 opcode not supported.
-16 MVI	D, #$cd
-0a LDAX	B
-19 DAD D
-cd opcode not supported.
-f3 opcode not supported.
-15 DCR	 D
-cd opcode not supported.
-88 opcode not supported.
-09 DAD	B
+cd CALL $18fa
+cd CALL $1618
+cd CALL $190a
+cd CALL $15f3
+cd CALL $0988
 3a LDA (0082)
-a7 opcode not supported.
-ca opcode not supported.
-ef opcode not supported.
-09 DAD	B
-cd opcode not supported.
-0e MVI	C, 17
-cd opcode not supported.
-35 DCR M
-09 DAD	B
-cd opcode not supported.
-d8 opcode not supported.
-08 opcode not supported.
-cd opcode not supported.
-2c INR L
-17 RAL
-cd opcode not supported.
-59 MOV E,C
-0a LDAX	B
-ca opcode not supported.
-49 MOV C,C
-08 opcode not supported.
+a7 ANA A
+ca JZ $09ef
+cd CALL $170e
+cd CALL $0935
+cd CALL $08d8
+cd CALL $172c
+cd CALL $0a59
+ca JZ $0849
 06 MVI	B, 04
-cd opcode not supported.
-fa opcode not supported.
-18 opcode not supported.
-cd opcode not supported.
-75 MOV M,L
-17 RAL
-d3 opcode not supported.
-06 MVI	B, cd
-04 INR	B
-18 opcode not supported.
-c3 opcode not supported.
-1f RAR
-08 opcode not supported.
+cd CALL $18fa
+cd CALL $1775
+d3 OUT 06
+cd CALL $1804
+c3 JMP 081f
 00 NOP
 00 NOP
 00 NOP
 11 LXI	D, #$1aba
-cd opcode not supported.
-f3 opcode not supported.
-08 opcode not supported.
+cd CALL $08f3
 06 MVI	B, 98
-db opcode not supported.
-01 LXI	B, #$0f0f
-da opcode not supported.
-6d MOV L,L
-08 opcode not supported.
+db IN 01
 0f RRC
-da opcode not supported.
-98 opcode not supported.
-07 RLC
-c3 opcode not supported.
-7f MOV A,A
-07 RLC
+0f RRC
+da JC $086d
+0f RRC
+da JC $0798
+c3 JMP 077f
 3e MVI A,#$01
-c3 opcode not supported.
-9b opcode not supported.
-07 RLC
-cd opcode not supported.
-1a LDAX D
-02 STAX	B
-c3 opcode not supported.
-14 INR	D
-08 opcode not supported.
+c3 JMP 079b
+cd CALL $021a
+c3 JMP 0814
 3a LDA (0008)
 47 MOV B,A
 2a LHLD (0009)
-eb opcode not supported.
-c3 opcode not supported.
-86 ADD M
-08 opcode not supported.
+eb XCHG
+c3 JMP 0886
 00 NOP
 00 NOP
 00 NOP
 3a LDA (0067)
 67 MOV H,A
 2e MVI L, #$fc
-c9 opcode not supported.
+c9 RET
 21 LXI H, #$2b11
 11 LXI	D, #$1b70
 0e MVI	C, 0e
-cd opcode not supported.
-f3 opcode not supported.
-08 opcode not supported.
+cd CALL $08f3
 3a LDA (0067)
 0f RRC
 3e MVI A,#$1c
 21 LXI H, #$3711
-d4 opcode not supported.
-ff opcode not supported.
-08 opcode not supported.
+d4 CNC $08ff
 3e MVI A,#$b0
 32 STA (00c0)
 3a LDA (00c0)
-a7 opcode not supported.
-c8 opcode not supported.
-e6 opcode not supported.
-04 INR	B
-c2 opcode not supported.
-bc opcode not supported.
-08 opcode not supported.
-cd opcode not supported.
-ca opcode not supported.
-09 DAD	B
-cd opcode not supported.
-31 LXI SP,#$c319
-a9 opcode not supported.
-08 opcode not supported.
+a7 ANA A
+c8 RZ
+e6 ANI 04
+c2 JNZ 08bc
+cd CALL $09ca
+cd CALL $1931
+c3 JMP 08a9
 06 MVI	B, 20
 21 LXI H, #$271c
 3a LDA (0067)
 0f RRC
-da opcode not supported.
-cb opcode not supported.
-08 opcode not supported.
+da JC $08cb
 21 LXI H, #$391c
-cd opcode not supported.
-cb opcode not supported.
-14 INR	D
-c3 opcode not supported.
-a9 opcode not supported.
-08 opcode not supported.
-db opcode not supported.
-02 STAX	B
-e6 opcode not supported.
-03 INX	B
-c6 opcode not supported.
-03 INX	B
-c9 opcode not supported.
+cd CALL $14cb
+c3 JMP 08a9
+db IN 02
+e6 ANI 03
+c6 ADI $03
+c9 RET
 3a LDA (0082)
-fe opcode not supported.
-09 DAD	B
-d0 opcode not supported.
+fe CPI 09
+d0 RNC
 3e MVI A,#$fb
 32 STA (007e)
-c9 opcode not supported.
+c9 RET
 3a LDA (00ce)
-a7 opcode not supported.
-c0 opcode not supported.
+a7 ANA A
+c0 RNZ
 21 LXI H, #$391c
 06 MVI	B, 20
-c3 opcode not supported.
-cb opcode not supported.
-14 INR	D
+c3 JMP 14cb
 0e MVI	C, 03
 1a LDAX D
-d5 opcode not supported.
-cd opcode not supported.
-ff opcode not supported.
-08 opcode not supported.
-d1 opcode not supported.
+d5 PUSH D
+cd CALL $08ff
+d1 POP D
 13 INX	D
 0d DCR	C
-c2 opcode not supported.
-f3 opcode not supported.
-08 opcode not supported.
-c9 opcode not supported.
+c2 JNZ 08f3
+c9 RET
 11 LXI	D, #$1e00
-e5 opcode not supported.
+e5 PUSH H
 26 MVI H, #$00
 6f MOV L,A
 29 DAD H
 29 DAD H
 29 DAD H
 19 DAD D
-eb opcode not supported.
-e1 opcode not supported.
+eb XCHG
+e1 POP H
 06 MVI	B, 08
-d3 opcode not supported.
-06 MVI	B, c3
-39 DAD SP
-14 INR	D
+d3 OUT 06
+c3 JMP 1439
 3a LDA (0009)
-fe opcode not supported.
-78 MOV A,B
-d0 opcode not supported.
+fe CPI 78
+d0 RNC
 2a LHLD (0091)
 7d MOV A,L
-b4 opcode not supported.
-c2 opcode not supported.
-29 DAD H
-09 DAD	B
+b4 ORA H
+c2 JNZ 0929
 21 LXI H, #$0600
 3e MVI A,#$01
 32 STA (0083)
 2b DCX H
 22 SHLD (0091)
-c9 opcode not supported.
-cd opcode not supported.
-11 LXI	D, #$2e16
-ff opcode not supported.
+c9 RET
+cd CALL $1611
+2e MVI L, #$ff
 7e MOV A,M
-c9 opcode not supported.
-cd opcode not supported.
-10 opcode not supported.
-19 DAD D
+c9 RET
+cd CALL $1910
 2b DCX H
 2b DCX H
 7e MOV A,M
-a7 opcode not supported.
-c8 opcode not supported.
+a7 ANA A
+c8 RZ
 06 MVI	B, 15
-db opcode not supported.
-02 STAX	B
-e6 opcode not supported.
-08 opcode not supported.
-ca opcode not supported.
-48 MOV C,B
-09 DAD	B
+db IN 02
+e6 ANI 08
+ca JZ $0948
 06 MVI	B, 10
-cd opcode not supported.
-ca opcode not supported.
-09 DAD	B
+cd CALL $09ca
 23 INX H
 7e MOV A,M
-b8 opcode not supported.
-d8 opcode not supported.
-cd opcode not supported.
-2e MVI L, #$09
+b8 CMP B
+d8 RC
+cd CALL $092e
 34 INR M
 7e MOV A,M
-f5 opcode not supported.
+f5 PUSH PSW
 21 LXI H, #$2501
 24 INR H
 24 INR H
 3d DCR A
-c2 opcode not supported.
-58 MOV E,B
-09 DAD	B
+c2 JNZ 0958
 06 MVI	B, 10
 11 LXI	D, #$1c60
-cd opcode not supported.
-39 DAD SP
-14 INR	D
-f1 opcode not supported.
+cd CALL $1439
+f1 OP PSW
 3c INR A
-cd opcode not supported.
-8b opcode not supported.
-1a LDAX D
-cd opcode not supported.
-10 opcode not supported.
-19 DAD D
+cd CALL $1a8b
+cd CALL $1910
 2b DCX H
 2b DCX H
 36 MVI M, #$00
 3e MVI A,#$ff
 32 STA (0099)
 06 MVI	B, 10
-c3 opcode not supported.
-fa opcode not supported.
-18 opcode not supported.
+c3 JMP 18fa
 21 LXI H, #$1da0
-fe opcode not supported.
-02 STAX	B
-d8 opcode not supported.
+fe CPI 02
+d8 RC
 23 INX H
-fe opcode not supported.
-04 INR	B
-d8 opcode not supported.
+fe CPI 04
+d8 RC
 23 INX H
-c9 opcode not supported.
-cd opcode not supported.
-ca opcode not supported.
-09 DAD	B
+c9 RET
+cd CALL $09ca
 3a LDA (00f1)
-a7 opcode not supported.
-c8 opcode not supported.
-af opcode not supported.
+a7 ANA A
+c8 RZ
+af XRA A
 32 STA (00f1)
-e5 opcode not supported.
+e5 PUSH H
 2a LHLD (00f2)
-eb opcode not supported.
-e1 opcode not supported.
+eb XCHG
+e1 POP H
 7e MOV A,M
 83 ADD E
 27 DAA
@@ -1773,7 +1227,7 @@ e1 opcode not supported.
 5f MOV E,A
 23 INX H
 7e MOV A,M
-8a opcode not supported.
+8a ADC D
 27 DAA
 77 MOV M,A
 57 MOV D,A
@@ -1782,162 +1236,106 @@ e1 opcode not supported.
 23 INX H
 66 MOV H,M
 6f MOV L,A
-c3 opcode not supported.
-ad opcode not supported.
-09 DAD	B
+c3 JMP 09ad
 7a MOV A,D
-cd opcode not supported.
-b2 opcode not supported.
-09 DAD	B
+cd CALL $09b2
 7b MOV A,E
-d5 opcode not supported.
-f5 opcode not supported.
+d5 PUSH D
+f5 PUSH PSW
 0f RRC
 0f RRC
 0f RRC
 0f RRC
-e6 opcode not supported.
-0f RRC
-cd opcode not supported.
-c5 opcode not supported.
-09 DAD	B
-f1 opcode not supported.
-e6 opcode not supported.
-0f RRC
-cd opcode not supported.
-c5 opcode not supported.
-09 DAD	B
-d1 opcode not supported.
-c9 opcode not supported.
-c6 opcode not supported.
-1a LDAX D
-c3 opcode not supported.
-ff opcode not supported.
-08 opcode not supported.
+e6 ANI 0f
+cd CALL $09c5
+f1 OP PSW
+e6 ANI 0f
+cd CALL $09c5
+d1 POP D
+c9 RET
+c6 ADI $1a
+c3 JMP 08ff
 3a LDA (0067)
 0f RRC
 21 LXI H, #$20f8
-d8 opcode not supported.
+d8 RC
 21 LXI H, #$20fc
-c9 opcode not supported.
+c9 RET
 21 LXI H, #$2402
 36 MVI M, #$00
 23 INX H
 7d MOV A,L
-e6 opcode not supported.
-1f RAR
-fe opcode not supported.
-1c INR E
-da opcode not supported.
-e8 opcode not supported.
-09 DAD	B
+e6 ANI 1f
+fe CPI 1c
+da JC $09e8
 11 LXI	D, #$0006
 19 DAD D
 7c MOV A,H
-fe opcode not supported.
-40 MOV B,B
-da opcode not supported.
-d9 opcode not supported.
-09 DAD	B
-c9 opcode not supported.
-cd opcode not supported.
-3c INR A
-0a LDAX	B
-af opcode not supported.
+fe CPI 40
+da JC $09d9
+c9 RET
+cd CALL $0a3c
+af XRA A
 32 STA (00e9)
-cd opcode not supported.
-d6 opcode not supported.
-09 DAD	B
+cd CALL $09d6
 3a LDA (0067)
-f5 opcode not supported.
-cd opcode not supported.
-e4 opcode not supported.
-01 LXI	B, #$32f1
-67 MOV H,A
-20 RIM
+f5 PUSH PSW
+cd CALL $01e4
+f1 OP PSW
+32 STA (0067)
 3a LDA (0067)
 67 MOV H,A
-e5 opcode not supported.
+e5 PUSH H
 2e MVI L, #$fe
 7e MOV A,M
-e6 opcode not supported.
-07 RLC
+e6 ANI 07
 3c INR A
 77 MOV M,A
 21 LXI H, #$1da2
 23 INX H
 3d DCR A
-c2 opcode not supported.
-13 INX	D
-0a LDAX	B
+c2 JNZ 0a13
 7e MOV A,M
-e1 opcode not supported.
+e1 POP H
 2e MVI L, #$fc
 77 MOV M,A
 23 INX H
 36 MVI M, #$38
 7c MOV A,H
 0f RRC
-da opcode not supported.
-33 INX SP
-0a LDAX	B
+da JC $0a33
 3e MVI A,#$21
 32 STA (0098)
-cd opcode not supported.
-f5 opcode not supported.
-01 LXI	B, #$04cd
-19 DAD D
-c3 opcode not supported.
-04 INR	B
-08 opcode not supported.
-cd opcode not supported.
-ef opcode not supported.
-01 LXI	B, #$c0cd
-01 LXI	B, #$04c3
-08 opcode not supported.
-cd opcode not supported.
-59 MOV E,C
-0a LDAX	B
-c2 opcode not supported.
-52 MOV D,D
-0a LDAX	B
+cd CALL $01f5
+cd CALL $1904
+c3 JMP 0804
+cd CALL $01ef
+cd CALL $01c0
+c3 JMP 0804
+cd CALL $0a59
+c2 JNZ 0a52
 3e MVI A,#$30
 32 STA (00c0)
 3a LDA (00c0)
-a7 opcode not supported.
-c8 opcode not supported.
-cd opcode not supported.
-59 MOV E,C
-0a LDAX	B
-ca opcode not supported.
-47 MOV B,A
-0a LDAX	B
-cd opcode not supported.
-59 MOV E,C
-0a LDAX	B
-c2 opcode not supported.
-52 MOV D,D
-0a LDAX	B
-c9 opcode not supported.
+a7 ANA A
+c8 RZ
+cd CALL $0a59
+ca JZ $0a47
+cd CALL $0a59
+c2 JNZ 0a52
+c9 RET
 3a LDA (0015)
-fe opcode not supported.
-ff opcode not supported.
-c9 opcode not supported.
+fe CPI ff
+c9 RET
 3a LDA (00ef)
-a7 opcode not supported.
-ca opcode not supported.
-7c MOV A,H
-0a LDAX	B
+a7 ANA A
+ca JZ $0a7c
 48 MOV C,B
 06 MVI	B, 08
-cd opcode not supported.
-fa opcode not supported.
-18 opcode not supported.
+cd CALL $18fa
 41 MOV B,C
 78 MOV A,B
-cd opcode not supported.
-7c MOV A,H
-09 DAD	B
+cd CALL $097c
 7e MOV A,M
 21 LXI H, #$20f3
 36 MVI M, #$00
@@ -1946,286 +1344,157 @@ cd opcode not supported.
 2b DCX H
 36 MVI M, #$01
 21 LXI H, #$2062
-c9 opcode not supported.
+c9 RET
 3e MVI A,#$02
 32 STA (00c1)
-d3 opcode not supported.
-06 MVI	B, 3a
-cb opcode not supported.
-20 RIM
-a7 opcode not supported.
-ca opcode not supported.
-85 ADD L
-0a LDAX	B
-af opcode not supported.
+d3 OUT 06
+3a LDA (00cb)
+a7 ANA A
+ca JZ $0a85
+af XRA A
 32 STA (00c1)
-c9 opcode not supported.
-d5 opcode not supported.
+c9 RET
+d5 PUSH D
 1a LDAX D
-cd opcode not supported.
-ff opcode not supported.
-08 opcode not supported.
-d1 opcode not supported.
+cd CALL $08ff
+d1 POP D
 3e MVI A,#$07
 32 STA (00c0)
 3a LDA (00c0)
 3d DCR A
-c2 opcode not supported.
-9e opcode not supported.
-0a LDAX	B
+c2 JNZ 0a9e
 13 INX	D
 0d DCR	C
-c2 opcode not supported.
-93 opcode not supported.
-0a LDAX	B
-c9 opcode not supported.
+c2 JNZ 0a93
+c9 RET
 21 LXI H, #$2050
-c3 opcode not supported.
-4b MOV C,E
-02 STAX	B
+c3 JMP 024b
 3e MVI A,#$40
-c3 opcode not supported.
-d7 opcode not supported.
-0a LDAX	B
+c3 JMP 0ad7
 3e MVI A,#$80
-c3 opcode not supported.
-d7 opcode not supported.
-0a LDAX	B
-e1 opcode not supported.
-c3 opcode not supported.
-72 MOV M,D
-00 NOP
+c3 JMP 0ad7
+e1 POP H
+c3 JMP 0072
 3a LDA (00c1)
 0f RRC
-da opcode not supported.
-bb opcode not supported.
-0a LDAX	B
+da JC $0abb
 0f RRC
-da opcode not supported.
-68 MOV L,B
-18 opcode not supported.
+da JC $1868
 0f RRC
-da opcode not supported.
-ab opcode not supported.
-0a LDAX	B
-c9 opcode not supported.
+da JC $0aab
+c9 RET
 21 LXI H, #$2b14
 0e MVI	C, 0f
-c3 opcode not supported.
-93 opcode not supported.
-0a LDAX	B
+c3 JMP 0a93
 32 STA (00c0)
 3a LDA (00c0)
-a7 opcode not supported.
-c2 opcode not supported.
-da opcode not supported.
-0a LDAX	B
-c9 opcode not supported.
+a7 ANA A
+c2 JNZ 0ada
+c9 RET
 21 LXI H, #$20c2
 06 MVI	B, 0c
-c3 opcode not supported.
-32 STA (001a)
-d3 opcode not supported.
-03 INX	B
-d3 opcode not supported.
-05 DCR	B
-cd opcode not supported.
-82 ADD D
-19 DAD D
-fb opcode not supported.
-cd opcode not supported.
-b1 opcode not supported.
-0a LDAX	B
+c3 JMP 1a32
+af XRA A
+d3 OUT 03
+d3 OUT 05
+cd CALL $1982
+fb EI
+cd CALL $0ab1
 3a LDA (00ec)
-a7 opcode not supported.
+a7 ANA A
 21 LXI H, #$3017
 0e MVI	C, 04
-c2 opcode not supported.
-e8 opcode not supported.
-0b DCX	B
+c2 JNZ 0be8
 11 LXI	D, #$1cfa
-cd opcode not supported.
-93 opcode not supported.
-0a LDAX	B
+cd CALL $0a93
 11 LXI	D, #$1daf
-cd opcode not supported.
-cf opcode not supported.
-0a LDAX	B
-cd opcode not supported.
-b1 opcode not supported.
-0a LDAX	B
-cd opcode not supported.
-15 DCR	 D
-18 opcode not supported.
-cd opcode not supported.
-b6 opcode not supported.
-0a LDAX	B
+cd CALL $0acf
+cd CALL $0ab1
+cd CALL $1815
+cd CALL $0ab6
 3a LDA (00ec)
-a7 opcode not supported.
-c2 opcode not supported.
-4a MOV C,D
-0b DCX	B
+a7 ANA A
+c2 JNZ 0b4a
 11 LXI	D, #$1a95
-cd opcode not supported.
-e2 opcode not supported.
-0a LDAX	B
-cd opcode not supported.
-80 ADD B
-0a LDAX	B
+cd CALL $0ae2
+cd CALL $0a80
 11 LXI	D, #$1bb0
-cd opcode not supported.
-e2 opcode not supported.
-0a LDAX	B
-cd opcode not supported.
-80 ADD B
-0a LDAX	B
-cd opcode not supported.
-b1 opcode not supported.
-0a LDAX	B
+cd CALL $0ae2
+cd CALL $0a80
+cd CALL $0ab1
 11 LXI	D, #$1fc9
-cd opcode not supported.
-e2 opcode not supported.
-0a LDAX	B
-cd opcode not supported.
-80 ADD B
-0a LDAX	B
-cd opcode not supported.
-b1 opcode not supported.
-0a LDAX	B
+cd CALL $0ae2
+cd CALL $0a80
+cd CALL $0ab1
 21 LXI H, #$33b7
 06 MVI	B, 0a
-cd opcode not supported.
-cb opcode not supported.
-14 INR	D
-cd opcode not supported.
-b6 opcode not supported.
-0a LDAX	B
-cd opcode not supported.
-d6 opcode not supported.
-09 DAD	B
+cd CALL $14cb
+cd CALL $0ab6
+cd CALL $09d6
 3a LDA (00ff)
-a7 opcode not supported.
-c2 opcode not supported.
-5d MOV E,L
-0b DCX	B
-cd opcode not supported.
-d1 opcode not supported.
-08 opcode not supported.
+a7 ANA A
+c2 JNZ 0b5d
+cd CALL $08d1
 32 STA (00ff)
-cd opcode not supported.
-7f MOV A,A
-1a LDAX D
-cd opcode not supported.
-e4 opcode not supported.
-01 LXI	B, #$c0cd
-01 LXI	B, #$efcd
-01 LXI	B, #$1acd
-02 STAX	B
+cd CALL $1a7f
+cd CALL $01e4
+cd CALL $01c0
+cd CALL $01ef
+cd CALL $021a
 3e MVI A,#$01
 32 STA (00c1)
-cd opcode not supported.
-cf opcode not supported.
-01 LXI	B, #$18cd
-16 MVI	D, #$cd
-f1 opcode not supported.
-0b DCX	B
-d3 opcode not supported.
-06 MVI	B, cd
-59 MOV E,C
-0a LDAX	B
-ca opcode not supported.
-71 MOV M,C
-0b DCX	B
-af opcode not supported.
+cd CALL $01cf
+cd CALL $1618
+cd CALL $0bf1
+d3 OUT 06
+cd CALL $0a59
+ca JZ $0b71
+af XRA A
 32 STA (0025)
-cd opcode not supported.
-59 MOV E,C
-0a LDAX	B
-c2 opcode not supported.
-83 ADD E
-0b DCX	B
-af opcode not supported.
+cd CALL $0a59
+c2 JNZ 0b83
+af XRA A
 32 STA (00c1)
-cd opcode not supported.
-b1 opcode not supported.
-0a LDAX	B
-cd opcode not supported.
-88 opcode not supported.
-19 DAD D
+cd CALL $0ab1
+cd CALL $1988
 0e MVI	C, 0c
 21 LXI H, #$2c11
 11 LXI	D, #$1f90
-cd opcode not supported.
-f3 opcode not supported.
-08 opcode not supported.
+cd CALL $08f3
 3a LDA (00ec)
-fe opcode not supported.
-00 NOP
-c2 opcode not supported.
-ae opcode not supported.
-0b DCX	B
+fe CPI 00
+c2 JNZ 0bae
 21 LXI H, #$3311
 3e MVI A,#$02
-cd opcode not supported.
-ff opcode not supported.
-08 opcode not supported.
+cd CALL $08ff
 01 LXI	B, #$1f9c
-cd opcode not supported.
-56 MOV D,M
-18 opcode not supported.
-cd opcode not supported.
-4c MOV C,H
-18 opcode not supported.
-db opcode not supported.
-02 STAX	B
+cd CALL $1856
+cd CALL $184c
+db IN 02
 07 RLC
-da opcode not supported.
-c3 opcode not supported.
-0b DCX	B
+da JC $0bc3
 01 LXI	B, #$1fa0
-cd opcode not supported.
-3a LDA (0018)
-b6 opcode not supported.
-0a LDAX	B
+cd CALL $183a
+cd CALL $0ab6
 3a LDA (00ec)
-fe opcode not supported.
-00 NOP
-c2 opcode not supported.
-da opcode not supported.
-0b DCX	B
+fe CPI 00
+c2 JNZ 0bda
 11 LXI	D, #$1fd5
-cd opcode not supported.
-e2 opcode not supported.
-0a LDAX	B
-cd opcode not supported.
-80 ADD B
-0a LDAX	B
-cd opcode not supported.
-9e opcode not supported.
-18 opcode not supported.
+cd CALL $0ae2
+cd CALL $0a80
+cd CALL $189e
 21 LXI H, #$20ec
 7e MOV A,M
 3c INR A
-e6 opcode not supported.
-01 LXI	B, #$cd77
-d6 opcode not supported.
-09 DAD	B
-c3 opcode not supported.
-df opcode not supported.
-18 opcode not supported.
+e6 ANI 01
+77 MOV M,A
+cd CALL $09d6
+c3 JMP 18df
 11 LXI	D, #$1dab
-cd opcode not supported.
-93 opcode not supported.
-0a LDAX	B
-c3 opcode not supported.
-0b DCX	B
-0b DCX	B
-cd opcode not supported.
-0a LDAX	B
-19 DAD D
-c3 opcode not supported.
-9a opcode not supported.
-19 DAD D
+cd CALL $0a93
+c3 JMP 0b0b
+cd CALL $190a
+c3 JMP 199a
 13 INX	D
 00 NOP
 08 opcode not supported.
@@ -4282,70 +3551,56 @@ c3 opcode not supported.
 00 NOP
 00 NOP
 00 NOP
-cd opcode not supported.
-74 MOV M,H
-14 INR	D
+cd CALL $1474
 00 NOP
-c5 opcode not supported.
-e5 opcode not supported.
+c5 PUSH B
+e5 PUSH H
 1a LDAX D
-d3 opcode not supported.
-04 INR	B
-db opcode not supported.
-03 INX	B
-b6 opcode not supported.
+d3 OUT 04
+db IN 03
+b6 ORA M
 77 MOV M,A
 23 INX H
 13 INX	D
-af opcode not supported.
-d3 opcode not supported.
-04 INR	B
-db opcode not supported.
-03 INX	B
-b6 opcode not supported.
+af XRA A
+d3 OUT 04
+db IN 03
+b6 ORA M
 77 MOV M,A
-e1 opcode not supported.
+e1 POP H
 01 LXI	B, #$0020
 09 DAD	B
-c1 opcode not supported.
+c1 POP B
 05 DCR	B
-c2 opcode not supported.
-05 DCR	B
-14 INR	D
-c9 opcode not supported.
+c2 JNZ 1405
+c9 RET
 00 NOP
 00 NOP
-cd opcode not supported.
-74 MOV M,H
-14 INR	D
-c5 opcode not supported.
-e5 opcode not supported.
-af opcode not supported.
+cd CALL $1474
+c5 PUSH B
+e5 PUSH H
+af XRA A
 77 MOV M,A
 23 INX H
 77 MOV M,A
 23 INX H
-e1 opcode not supported.
+e1 POP H
 01 LXI	B, #$0020
 09 DAD	B
-c1 opcode not supported.
+c1 POP B
 05 DCR	B
-c2 opcode not supported.
-27 DAA
-14 INR	D
-c9 opcode not supported.
-c5 opcode not supported.
+c2 JNZ 1427
+c9 RET
+c5 PUSH B
 1a LDAX D
 77 MOV M,A
 13 INX	D
 01 LXI	B, #$0020
 09 DAD	B
-c1 opcode not supported.
+c1 POP B
 05 DCR	B
-c2 opcode not supported.
-39 DAD SP
-14 INR	D
-c9 opcode not supported.
+c2 JNZ 1439
+c9 RET
 00 NOP
 00 NOP
 00 NOP
@@ -4357,251 +3612,175 @@ c9 opcode not supported.
 00 NOP
 00 NOP
 00 NOP
-cd opcode not supported.
-74 MOV M,H
-14 INR	D
-c5 opcode not supported.
-e5 opcode not supported.
+cd CALL $1474
+c5 PUSH B
+e5 PUSH H
 1a LDAX D
-d3 opcode not supported.
-04 INR	B
-db opcode not supported.
-03 INX	B
+d3 OUT 04
+db IN 03
 2f CMA
-a6 opcode not supported.
+a6 ANA M
 77 MOV M,A
 23 INX H
 13 INX	D
-af opcode not supported.
-d3 opcode not supported.
-04 INR	B
-db opcode not supported.
-03 INX	B
+af XRA A
+d3 OUT 04
+db IN 03
 2f CMA
-a6 opcode not supported.
+a6 ANA M
 77 MOV M,A
-e1 opcode not supported.
+e1 POP H
 01 LXI	B, #$0020
 09 DAD	B
-c1 opcode not supported.
+c1 POP B
 05 DCR	B
-c2 opcode not supported.
-55 MOV D,L
-14 INR	D
-c9 opcode not supported.
+c2 JNZ 1455
+c9 RET
 7d MOV A,L
-e6 opcode not supported.
-07 RLC
-d3 opcode not supported.
-02 STAX	B
-c3 opcode not supported.
-47 MOV B,A
-1a LDAX D
-c5 opcode not supported.
-e5 opcode not supported.
+e6 ANI 07
+d3 OUT 02
+c3 JMP 1a47
+c5 PUSH B
+e5 PUSH H
 7e MOV A,M
 12 STAX	D
 13 INX	D
 23 INX H
 0d DCR	C
-c2 opcode not supported.
-7e MOV A,M
-14 INR	D
-e1 opcode not supported.
+c2 JNZ 147e
+e1 POP H
 01 LXI	B, #$0020
 09 DAD	B
-c1 opcode not supported.
+c1 POP B
 05 DCR	B
-c2 opcode not supported.
-7c MOV A,H
-14 INR	D
-c9 opcode not supported.
-cd opcode not supported.
-74 MOV M,H
-14 INR	D
-af opcode not supported.
+c2 JNZ 147c
+c9 RET
+cd CALL $1474
+af XRA A
 32 STA (0061)
-c5 opcode not supported.
-e5 opcode not supported.
+c5 PUSH B
+e5 PUSH H
 1a LDAX D
-d3 opcode not supported.
-04 INR	B
-db opcode not supported.
-03 INX	B
-f5 opcode not supported.
-a6 opcode not supported.
-ca opcode not supported.
-a9 opcode not supported.
-14 INR	D
+d3 OUT 04
+db IN 03
+f5 PUSH PSW
+a6 ANA M
+ca JZ $14a9
 3e MVI A,#$01
 32 STA (0061)
-f1 opcode not supported.
-b6 opcode not supported.
+f1 OP PSW
+b6 ORA M
 77 MOV M,A
 23 INX H
 13 INX	D
-af opcode not supported.
-d3 opcode not supported.
-04 INR	B
-db opcode not supported.
-03 INX	B
-f5 opcode not supported.
-a6 opcode not supported.
-ca opcode not supported.
-bd opcode not supported.
-14 INR	D
+af XRA A
+d3 OUT 04
+db IN 03
+f5 PUSH PSW
+a6 ANA M
+ca JZ $14bd
 3e MVI A,#$01
 32 STA (0061)
-f1 opcode not supported.
-b6 opcode not supported.
+f1 OP PSW
+b6 ORA M
 77 MOV M,A
-e1 opcode not supported.
+e1 POP H
 01 LXI	B, #$0020
 09 DAD	B
-c1 opcode not supported.
+c1 POP B
 05 DCR	B
-c2 opcode not supported.
-98 opcode not supported.
-14 INR	D
-c9 opcode not supported.
-af opcode not supported.
-c5 opcode not supported.
+c2 JNZ 1498
+c9 RET
+af XRA A
+c5 PUSH B
 77 MOV M,A
 01 LXI	B, #$0020
 09 DAD	B
-c1 opcode not supported.
+c1 POP B
 05 DCR	B
-c2 opcode not supported.
-cc opcode not supported.
-14 INR	D
-c9 opcode not supported.
+c2 JNZ 14cc
+c9 RET
 3a LDA (0025)
-fe opcode not supported.
-05 DCR	B
-c8 opcode not supported.
-fe opcode not supported.
-02 STAX	B
-c0 opcode not supported.
+fe CPI 05
+c8 RZ
+fe CPI 02
+c0 RNZ
 3a LDA (0029)
-fe opcode not supported.
-d8 opcode not supported.
+fe CPI d8
 47 MOV B,A
-d2 opcode not supported.
-30 SIM
-15 DCR	 D
+d2 JNC $1530
 3a LDA (0002)
-a7 opcode not supported.
-c8 opcode not supported.
+a7 ANA A
+c8 RZ
 78 MOV A,B
-fe opcode not supported.
-ce opcode not supported.
-d2 opcode not supported.
-79 MOV A,C
-15 DCR	 D
-c6 opcode not supported.
-06 MVI	B, 47
+fe CPI ce
+d2 JNC $1579
+c6 ADI $06
+47 MOV B,A
 3a LDA (0009)
-fe opcode not supported.
-90 opcode not supported.
-d2 opcode not supported.
-04 INR	B
-15 DCR	 D
-b8 opcode not supported.
-d2 opcode not supported.
-30 SIM
-15 DCR	 D
+fe CPI 90
+d2 JNC $1504
+b8 CMP B
+d2 JNC $1530
 68 MOV L,B
-cd opcode not supported.
-62 MOV H,D
-15 DCR	 D
+cd CALL $1562
 3a LDA (002a)
 67 MOV H,A
-cd opcode not supported.
-6f MOV L,A
-15 DCR	 D
+cd CALL $156f
 22 SHLD (0064)
 3e MVI A,#$05
 32 STA (0025)
-cd opcode not supported.
-81 ADD C
-15 DCR	 D
+cd CALL $1581
 7e MOV A,M
-a7 opcode not supported.
-ca opcode not supported.
-30 SIM
-15 DCR	 D
+a7 ANA A
+ca JZ $1530
 36 MVI M, #$00
-cd opcode not supported.
-5f MOV E,A
-0a LDAX	B
-cd opcode not supported.
-3b DCX SP
-1a LDAX D
-cd opcode not supported.
-d3 opcode not supported.
-15 DCR	 D
+cd CALL $0a5f
+cd CALL $1a3b
+cd CALL $15d3
 3e MVI A,#$10
 32 STA (0003)
-c9 opcode not supported.
+c9 RET
 3e MVI A,#$03
 32 STA (0025)
-c3 opcode not supported.
-4a MOV C,D
-15 DCR	 D
+c3 JMP 154a
 21 LXI H, #$2003
 35 DCR M
-c0 opcode not supported.
+c0 RNZ
 2a LHLD (0064)
 06 MVI	B, 10
-cd opcode not supported.
-24 INR H
-14 INR	D
+cd CALL $1424
 3e MVI A,#$04
 32 STA (0025)
-af opcode not supported.
+af XRA A
 32 STA (0002)
 06 MVI	B, f7
-c3 opcode not supported.
-dc opcode not supported.
-19 DAD D
+c3 JMP 19dc
 00 NOP
 0e MVI	C, 00
-bc opcode not supported.
-d4 opcode not supported.
-90 opcode not supported.
-15 DCR	 D
-bc opcode not supported.
-d0 opcode not supported.
-c6 opcode not supported.
-10 opcode not supported.
+bc CMP H
+d4 CNC $1590
+bc CMP H
+d0 RNC
+c6 ADI $10
 0c INR	C
-c3 opcode not supported.
-5a MOV E,D
-15 DCR	 D
+c3 JMP 155a
 3a LDA (0009)
 65 MOV H,L
-cd opcode not supported.
-54 MOV D,H
-15 DCR	 D
+cd CALL $1554
 41 MOV B,C
 05 DCR	B
-de opcode not supported.
-10 opcode not supported.
+de SBI 10
 6f MOV L,A
-c9 opcode not supported.
+c9 RET
 3a LDA (000a)
-cd opcode not supported.
-54 MOV D,H
-15 DCR	 D
-de opcode not supported.
-10 opcode not supported.
+cd CALL $1554
+de SBI 10
 67 MOV H,A
-c9 opcode not supported.
+c9 RET
 3e MVI A,#$01
 32 STA (0085)
-c3 opcode not supported.
-45 MOV B,L
-15 DCR	 D
+c3 JMP 1545
 78 MOV A,B
 07 RLC
 07 RLC
@@ -4614,24 +3793,17 @@ c3 opcode not supported.
 6f MOV L,A
 3a LDA (0067)
 67 MOV H,A
-c9 opcode not supported.
+c9 RET
 0c INR	C
-c6 opcode not supported.
-10 opcode not supported.
-fa opcode not supported.
-90 opcode not supported.
-15 DCR	 D
-c9 opcode not supported.
+c6 ADI $10
+fa JM $1590
+c9 RET
 3a LDA (000d)
-a7 opcode not supported.
-c2 opcode not supported.
-b7 opcode not supported.
-15 DCR	 D
+a7 ANA A
+c2 JNZ 15b7
 21 LXI H, #$3ea4
-cd opcode not supported.
-c5 opcode not supported.
-15 DCR	 D
-d0 opcode not supported.
+cd CALL $15c5
+d0 RNC
 06 MVI	B, fe
 3e MVI A,#$01
 32 STA (000d)
@@ -4639,276 +3811,182 @@ d0 opcode not supported.
 32 STA (0008)
 3a LDA (000e)
 32 STA (0007)
-c9 opcode not supported.
+c9 RET
 21 LXI H, #$2524
-cd opcode not supported.
-c5 opcode not supported.
-15 DCR	 D
-d0 opcode not supported.
-cd opcode not supported.
-f1 opcode not supported.
-18 opcode not supported.
-af opcode not supported.
-c3 opcode not supported.
-a9 opcode not supported.
-15 DCR	 D
+cd CALL $15c5
+d0 RNC
+cd CALL $18f1
+af XRA A
+c3 JMP 15a9
 06 MVI	B, 17
 7e MOV A,M
-a7 opcode not supported.
-c2 opcode not supported.
-6b MOV L,E
-16 MVI	D, #$23
+a7 ANA A
+c2 JNZ 166b
+23 INX H
 05 DCR	B
-c2 opcode not supported.
-c7 opcode not supported.
-15 DCR	 D
-c9 opcode not supported.
+c2 JNZ 15c7
+c9 RET
 00 NOP
-cd opcode not supported.
-74 MOV M,H
-14 INR	D
-e5 opcode not supported.
-c5 opcode not supported.
-e5 opcode not supported.
+cd CALL $1474
+e5 PUSH H
+c5 PUSH B
+e5 PUSH H
 1a LDAX D
-d3 opcode not supported.
-04 INR	B
-db opcode not supported.
-03 INX	B
+d3 OUT 04
+db IN 03
 77 MOV M,A
 23 INX H
 13 INX	D
-af opcode not supported.
-d3 opcode not supported.
-04 INR	B
-db opcode not supported.
-03 INX	B
+af XRA A
+d3 OUT 04
+db IN 03
 77 MOV M,A
-e1 opcode not supported.
+e1 POP H
 01 LXI	B, #$0020
 09 DAD	B
-c1 opcode not supported.
+c1 POP B
 05 DCR	B
-c2 opcode not supported.
-d7 opcode not supported.
-15 DCR	 D
-e1 opcode not supported.
-c9 opcode not supported.
-cd opcode not supported.
-11 LXI	D, #$0116
-00 NOP
-37 STC
+c2 JNZ 15d7
+e1 POP H
+c9 RET
+cd CALL $1611
+01 LXI	B, #$3700
 7e MOV A,M
-a7 opcode not supported.
-ca opcode not supported.
-ff opcode not supported.
-15 DCR	 D
+a7 ANA A
+ca JZ $15ff
 0c INR	C
 23 INX H
 05 DCR	B
-c2 opcode not supported.
-f9 opcode not supported.
-15 DCR	 D
+c2 JNZ 15f9
 79 MOV A,C
 32 STA (0082)
-fe opcode not supported.
-01 LXI	B, #$21c0
-6b MOV L,E
-20 RIM
+fe CPI 01
+c0 RNZ
+21 LXI H, #$206b
 36 MVI M, #$01
-c9 opcode not supported.
+c9 RET
 2e MVI L, #$00
 3a LDA (0067)
 67 MOV H,A
-c9 opcode not supported.
+c9 RET
 3a LDA (0015)
-fe opcode not supported.
-ff opcode not supported.
-c0 opcode not supported.
+fe CPI ff
+c0 RNZ
 21 LXI H, #$2010
 7e MOV A,M
 23 INX H
 46 MOV B,M
-b0 opcode not supported.
-c0 opcode not supported.
+b0 ORA B
+c0 RNZ
 3a LDA (0025)
-a7 opcode not supported.
-c0 opcode not supported.
+a7 ANA A
+c0 RNZ
 3a LDA (00ef)
-a7 opcode not supported.
-ca opcode not supported.
-52 MOV D,D
-16 MVI	D, #$3a
-2d DCR L
-20 RIM
-a7 opcode not supported.
-c2 opcode not supported.
-48 MOV C,B
-16 MVI	D, #$cd
-c0 opcode not supported.
-17 RAL
-e6 opcode not supported.
-10 opcode not supported.
-c8 opcode not supported.
+a7 ANA A
+ca JZ $1652
+3a LDA (002d)
+a7 ANA A
+c2 JNZ 1648
+cd CALL $17c0
+e6 ANI 10
+c8 RZ
 3e MVI A,#$01
 32 STA (0025)
 32 STA (002d)
-c9 opcode not supported.
-cd opcode not supported.
-c0 opcode not supported.
-17 RAL
-e6 opcode not supported.
-10 opcode not supported.
-c0 opcode not supported.
+c9 RET
+cd CALL $17c0
+e6 ANI 10
+c0 RNZ
 32 STA (002d)
-c9 opcode not supported.
+c9 RET
 21 LXI H, #$2025
 36 MVI M, #$01
 2a LHLD (00ed)
 23 INX H
 7d MOV A,L
-fe opcode not supported.
-7e MOV A,M
-da opcode not supported.
-63 MOV H,E
-16 MVI	D, #$2e
-74 MOV M,H
+fe CPI 7e
+da JC $1663
+2e MVI L, #$74
 22 SHLD (00ed)
 7e MOV A,M
 32 STA (001d)
-c9 opcode not supported.
+c9 RET
 37 STC
-c9 opcode not supported.
-af opcode not supported.
-cd opcode not supported.
-8b opcode not supported.
-1a LDAX D
-cd opcode not supported.
-10 opcode not supported.
-19 DAD D
+c9 RET
+af XRA A
+cd CALL $1a8b
+cd CALL $1910
 36 MVI M, #$00
-cd opcode not supported.
-ca opcode not supported.
-09 DAD	B
+cd CALL $09ca
 23 INX H
 11 LXI	D, #$20f5
 1a LDAX D
-be opcode not supported.
+be CMP M
 1b DCX D
 2b DCX H
 1a LDAX D
-ca opcode not supported.
-8b opcode not supported.
-16 MVI	D, #$d2
-98 opcode not supported.
-16 MVI	D, #$c3
-8f opcode not supported.
-16 MVI	D, #$be
-d2 opcode not supported.
-98 opcode not supported.
-16 MVI	D, #$7e
+ca JZ $168b
+d2 JNC $1698
+c3 JMP 168f
+be CMP M
+d2 JNC $1698
+7e MOV A,M
 12 STAX	D
 13 INX	D
 23 INX H
 7e MOV A,M
 12 STAX	D
-cd opcode not supported.
-50 MOV D,B
-19 DAD D
+cd CALL $1950
 3a LDA (00ce)
-a7 opcode not supported.
-ca opcode not supported.
-c9 opcode not supported.
-16 MVI	D, #$21
-03 INX	B
-28 opcode not supported.
+a7 ANA A
+ca JZ $16c9
+21 LXI H, #$2803
 11 LXI	D, #$1aa6
 0e MVI	C, 14
-cd opcode not supported.
-93 opcode not supported.
-0a LDAX	B
+cd CALL $0a93
 25 DCR H
 25 DCR H
 06 MVI	B, 1b
 3a LDA (0067)
 0f RRC
-da opcode not supported.
-b7 opcode not supported.
-16 MVI	D, #$06
-1c INR E
+da JC $16b7
+06 MVI	B, 1c
 78 MOV A,B
-cd opcode not supported.
-ff opcode not supported.
-08 opcode not supported.
-cd opcode not supported.
-b1 opcode not supported.
-0a LDAX	B
-cd opcode not supported.
-e7 opcode not supported.
-18 opcode not supported.
+cd CALL $08ff
+cd CALL $0ab1
+cd CALL $18e7
 7e MOV A,M
-a7 opcode not supported.
-ca opcode not supported.
-c9 opcode not supported.
-16 MVI	D, #$c3
-ed opcode not supported.
-02 STAX	B
+a7 ANA A
+ca JZ $16c9
+c3 JMP 02ed
 21 LXI H, #$2d18
 11 LXI	D, #$1aa6
 0e MVI	C, 0a
-cd opcode not supported.
-93 opcode not supported.
-0a LDAX	B
-cd opcode not supported.
-b6 opcode not supported.
-0a LDAX	B
-cd opcode not supported.
-d6 opcode not supported.
-09 DAD	B
-af opcode not supported.
+cd CALL $0a93
+cd CALL $0ab6
+cd CALL $09d6
+af XRA A
 32 STA (00ef)
-d3 opcode not supported.
-05 DCR	B
-cd opcode not supported.
-d1 opcode not supported.
-19 DAD D
-c3 opcode not supported.
-89 opcode not supported.
-0b DCX	B
+d3 OUT 05
+cd CALL $19d1
+c3 JMP 0b89
 31 LXI SP,#$2400
-fb opcode not supported.
-af opcode not supported.
+fb EI
+af XRA A
 32 STA (0015)
-cd opcode not supported.
-d8 opcode not supported.
-14 INR	D
+cd CALL $14d8
 06 MVI	B, 04
-cd opcode not supported.
-fa opcode not supported.
-18 opcode not supported.
-cd opcode not supported.
-59 MOV E,C
-0a LDAX	B
-c2 opcode not supported.
-ee opcode not supported.
-16 MVI	D, #$cd
-d7 opcode not supported.
-19 DAD D
+cd CALL $18fa
+cd CALL $0a59
+c2 JNZ 16ee
+cd CALL $19d7
 21 LXI H, #$2701
-cd opcode not supported.
-fa opcode not supported.
-19 DAD D
-af opcode not supported.
-cd opcode not supported.
-8b opcode not supported.
-1a LDAX D
+cd CALL $19fa
+af XRA A
+cd CALL $1a8b
 06 MVI	B, fb
-c3 opcode not supported.
-6b MOV L,E
-19 DAD D
-cd opcode not supported.
-ca opcode not supported.
-09 DAD	B
+c3 JMP 196b
+cd CALL $09ca
 23 INX H
 7e MOV A,M
 11 LXI	D, #$1cb8
@@ -4916,57 +3994,39 @@ ca opcode not supported.
 0e MVI	C, 04
 47 MOV B,A
 1a LDAX D
-b8 opcode not supported.
-d2 opcode not supported.
-27 DAA
-17 RAL
+b8 CMP B
+d2 JNC $1727
 23 INX H
 13 INX	D
 0d DCR	C
-c2 opcode not supported.
-1c INR E
-17 RAL
+c2 JNZ 171c
 7e MOV A,M
 32 STA (00cf)
-c9 opcode not supported.
+c9 RET
 3a LDA (0025)
-fe opcode not supported.
-00 NOP
-c2 opcode not supported.
-39 DAD SP
-17 RAL
+fe CPI 00
+c2 JNZ 1739
 06 MVI	B, fd
-c3 opcode not supported.
-dc opcode not supported.
-19 DAD D
+c3 JMP 19dc
 06 MVI	B, 02
-c3 opcode not supported.
-fa opcode not supported.
-18 opcode not supported.
+c3 JMP 18fa
 00 NOP
 00 NOP
 21 LXI H, #$209b
 35 DCR M
-cc opcode not supported.
-6d MOV L,L
-17 RAL
+cc CZ $176d
 3a LDA (0068)
-a7 opcode not supported.
-ca opcode not supported.
-6d MOV L,L
-17 RAL
+a7 ANA A
+ca JZ $176d
 21 LXI H, #$2096
 35 DCR M
-c0 opcode not supported.
+c0 RNZ
 21 LXI H, #$2098
 7e MOV A,M
-d3 opcode not supported.
-05 DCR	B
+d3 OUT 05
 3a LDA (0082)
-a7 opcode not supported.
-ca opcode not supported.
-6d MOV L,L
-17 RAL
+a7 ANA A
+ca JZ $176d
 2b DCX H
 7e MOV A,M
 2b DCX H
@@ -4975,182 +4035,124 @@ ca opcode not supported.
 36 MVI M, #$01
 3e MVI A,#$04
 32 STA (009b)
-c9 opcode not supported.
+c9 RET
 3a LDA (0098)
-e6 opcode not supported.
-30 SIM
-d3 opcode not supported.
-05 DCR	B
-c9 opcode not supported.
+e6 ANI 30
+d3 OUT 05
+c9 RET
 3a LDA (0095)
-a7 opcode not supported.
-ca opcode not supported.
-aa opcode not supported.
-17 RAL
+a7 ANA A
+ca JZ $17aa
 21 LXI H, #$1a11
 11 LXI	D, #$1a21
 3a LDA (0082)
-be opcode not supported.
-d2 opcode not supported.
-8e opcode not supported.
-17 RAL
+be CMP M
+d2 JNC $178e
 23 INX H
 13 INX	D
-c3 opcode not supported.
-85 ADD L
-17 RAL
+c3 JMP 1785
 1a LDAX D
 32 STA (0097)
 21 LXI H, #$2098
 7e MOV A,M
-e6 opcode not supported.
-30 SIM
+e6 ANI 30
 47 MOV B,A
 7e MOV A,M
-e6 opcode not supported.
-0f RRC
+e6 ANI 0f
 07 RLC
-fe opcode not supported.
-10 opcode not supported.
-c2 opcode not supported.
-a4 opcode not supported.
-17 RAL
+fe CPI 10
+c2 JNZ 17a4
 3e MVI A,#$01
-b0 opcode not supported.
+b0 ORA B
 77 MOV M,A
-af opcode not supported.
+af XRA A
 32 STA (0095)
 21 LXI H, #$2099
 35 DCR M
-c0 opcode not supported.
+c0 RNZ
 06 MVI	B, ef
-c3 opcode not supported.
-dc opcode not supported.
-19 DAD D
+c3 JMP 19dc
 06 MVI	B, ef
 21 LXI H, #$2098
 7e MOV A,M
-a0 opcode not supported.
+a0 ANA B
 77 MOV M,A
-d3 opcode not supported.
-05 DCR	B
-c9 opcode not supported.
+d3 OUT 05
+c9 RET
 00 NOP
 3a LDA (0067)
 0f RRC
-d2 opcode not supported.
-ca opcode not supported.
-17 RAL
-db opcode not supported.
-01 LXI	B, #$dbc9
-02 STAX	B
-c9 opcode not supported.
-db opcode not supported.
-02 STAX	B
-e6 opcode not supported.
-04 INR	B
-c8 opcode not supported.
+d2 JNC $17ca
+db IN 01
+c9 RET
+db IN 02
+c9 RET
+db IN 02
+e6 ANI 04
+c8 RZ
 3a LDA (009a)
-a7 opcode not supported.
-c0 opcode not supported.
+a7 ANA A
+c0 RNZ
 31 LXI SP,#$2400
 06 MVI	B, 04
-cd opcode not supported.
-d6 opcode not supported.
-09 DAD	B
+cd CALL $09d6
 05 DCR	B
-c2 opcode not supported.
-dc opcode not supported.
-17 RAL
+c2 JNZ 17dc
 3e MVI A,#$01
 32 STA (009a)
-cd opcode not supported.
-d7 opcode not supported.
-19 DAD D
-fb opcode not supported.
+cd CALL $19d7
+fb EI
 11 LXI	D, #$1cbc
 21 LXI H, #$3016
 0e MVI	C, 04
-cd opcode not supported.
-93 opcode not supported.
-0a LDAX	B
-cd opcode not supported.
-b1 opcode not supported.
-0a LDAX	B
-af opcode not supported.
+cd CALL $0a93
+cd CALL $0ab1
+af XRA A
 32 STA (009a)
 32 STA (0093)
-c3 opcode not supported.
-c9 opcode not supported.
-16 MVI	D, #$21
-84 ADD H
-20 RIM
+c3 JMP 16c9
+21 LXI H, #$2084
 7e MOV A,M
-a7 opcode not supported.
-ca opcode not supported.
-07 RLC
-07 RLC
+a7 ANA A
+ca JZ $0707
 23 INX H
 7e MOV A,M
-a7 opcode not supported.
-c0 opcode not supported.
+a7 ANA A
+c0 RNZ
 06 MVI	B, 01
-c3 opcode not supported.
-fa opcode not supported.
-18 opcode not supported.
+c3 JMP 18fa
 21 LXI H, #$2810
 11 LXI	D, #$1ca3
 0e MVI	C, 15
-cd opcode not supported.
-f3 opcode not supported.
-08 opcode not supported.
+cd CALL $08f3
 3e MVI A,#$0a
 32 STA (006c)
 01 LXI	B, #$1dbe
-cd opcode not supported.
-56 MOV D,M
-18 opcode not supported.
-da opcode not supported.
-37 STC
-18 opcode not supported.
-cd opcode not supported.
-44 MOV B,H
-18 opcode not supported.
-c3 opcode not supported.
-28 opcode not supported.
-18 opcode not supported.
-cd opcode not supported.
-b1 opcode not supported.
-0a LDAX	B
+cd CALL $1856
+da JC $1837
+cd CALL $1844
+c3 JMP 1828
+cd CALL $0ab1
 01 LXI	B, #$1dcf
-cd opcode not supported.
-56 MOV D,M
-18 opcode not supported.
-d8 opcode not supported.
-cd opcode not supported.
-4c MOV C,H
-18 opcode not supported.
-c3 opcode not supported.
-3a LDA (0018)
+cd CALL $1856
+d8 RC
+cd CALL $184c
+c3 JMP 183a
+c5 PUSH B
 06 MVI	B, 10
-cd opcode not supported.
-39 DAD SP
-14 INR	D
-c1 opcode not supported.
-c9 opcode not supported.
-c5 opcode not supported.
+cd CALL $1439
+c1 POP B
+c9 RET
+c5 PUSH B
 3a LDA (006c)
 4f MOV C,A
-cd opcode not supported.
-93 opcode not supported.
+cd CALL $0a93
+c1 POP B
+c9 RET
 0a LDAX	B
-c1 opcode not supported.
-c9 opcode not supported.
-0a LDAX	B
-fe opcode not supported.
-ff opcode not supported.
+fe CPI ff
 37 STC
-c8 opcode not supported.
+c8 RZ
 6f MOV L,A
 03 INX	B
 0a LDAX	B
@@ -5162,129 +4164,98 @@ c8 opcode not supported.
 0a LDAX	B
 57 MOV D,A
 03 INX	B
-a7 opcode not supported.
-c9 opcode not supported.
+a7 ANA A
+c9 RET
 21 LXI H, #$20c2
 34 INR M
 23 INX H
 4e MOV C,M
-cd opcode not supported.
-d9 opcode not supported.
-01 LXI	B, #$3a47
-ca opcode not supported.
-20 RIM
-b8 opcode not supported.
-ca opcode not supported.
-98 opcode not supported.
-18 opcode not supported.
+cd CALL $01d9
+47 MOV B,A
+3a LDA (00ca)
+b8 CMP B
+ca JZ $1898
 3a LDA (00c2)
-e6 opcode not supported.
-04 INR	B
+e6 ANI 04
 2a LHLD (00cc)
-c2 opcode not supported.
-88 opcode not supported.
-18 opcode not supported.
+c2 JNZ 1888
 11 LXI	D, #$0030
 19 DAD D
 22 SHLD (00c7)
 21 LXI H, #$20c5
-cd opcode not supported.
-3b DCX SP
-1a LDAX D
-eb opcode not supported.
-c3 opcode not supported.
-d3 opcode not supported.
-15 DCR	 D
+cd CALL $1a3b
+eb XCHG
+c3 JMP 15d3
 00 NOP
 00 NOP
 00 NOP
 3e MVI A,#$01
 32 STA (00cb)
-c9 opcode not supported.
+c9 RET
 21 LXI H, #$2050
 11 LXI	D, #$1bc0
 06 MVI	B, 10
-cd opcode not supported.
-32 STA (001a)
-02 STAX	B
+cd CALL $1a32
+3e MVI A,#$02
 32 STA (0080)
 3e MVI A,#$ff
 32 STA (007e)
 3e MVI A,#$04
 32 STA (00c1)
 3a LDA (0055)
-e6 opcode not supported.
-01 LXI	B, #$b8ca
-18 opcode not supported.
+e6 ANI 01
+ca JZ $18b8
 3a LDA (0055)
-e6 opcode not supported.
-01 LXI	B, #$c0c2
-18 opcode not supported.
+e6 ANI 01
+c2 JNZ 18c0
 21 LXI H, #$3311
 3e MVI A,#$26
 00 NOP
-cd opcode not supported.
-ff opcode not supported.
-08 opcode not supported.
-c3 opcode not supported.
-b6 opcode not supported.
-0a LDAX	B
+cd CALL $08ff
+c3 JMP 0ab6
 31 LXI SP,#$2400
 06 MVI	B, 00
-cd opcode not supported.
-e6 opcode not supported.
-01 LXI	B, #$56cd
-19 DAD D
+cd CALL $01e6
+cd CALL $1956
 3e MVI A,#$08
 32 STA (00cf)
-c3 opcode not supported.
-ea opcode not supported.
-0a LDAX	B
+c3 JMP 0aea
 3a LDA (0067)
 21 LXI H, #$20e7
 0f RRC
-d0 opcode not supported.
+d0 RNC
 23 INX H
-c9 opcode not supported.
+c9 RET
 06 MVI	B, 02
 3a LDA (0082)
 3d DCR A
-c0 opcode not supported.
+c0 RNZ
 04 INR	B
-c9 opcode not supported.
+c9 RET
 3a LDA (0094)
-b0 opcode not supported.
+b0 ORA B
 32 STA (0094)
-d3 opcode not supported.
-03 INX	B
-c9 opcode not supported.
+d3 OUT 03
+c9 RET
 21 LXI H, #$2200
-c3 opcode not supported.
-c3 opcode not supported.
-01 LXI	B, #$d8cd
-14 INR	D
-c3 opcode not supported.
-97 opcode not supported.
-15 DCR	 D
+c3 JMP 01c3
+cd CALL $14d8
+c3 JMP 1597
 21 LXI H, #$20e7
 3a LDA (0067)
 0f RRC
-d8 opcode not supported.
+d8 RC
 23 INX H
-c9 opcode not supported.
+c9 RET
 0e MVI	C, 1c
 21 LXI H, #$241e
 11 LXI	D, #$1ae4
-c3 opcode not supported.
-f3 opcode not supported.
-08 opcode not supported.
+c3 JMP 08f3
 21 LXI H, #$20f8
-c3 opcode not supported.
-31 LXI SP,#$2119
-fc opcode not supported.
-20 RIM
-c3 opcode not supported.
-31 LXI SP,#$5e19
+c3 JMP 1931
+21 LXI H, #$20fc
+c3 JMP 1931
+5e MOV E,M
 23 INX H
 56 MOV D,M
 23 INX H
@@ -5292,102 +4263,61 @@ c3 opcode not supported.
 23 INX H
 66 MOV H,M
 6f MOV L,A
-c3 opcode not supported.
-ad opcode not supported.
-09 DAD	B
+c3 JMP 09ad
 0e MVI	C, 07
 21 LXI H, #$3501
 11 LXI	D, #$1fa9
-c3 opcode not supported.
-f3 opcode not supported.
-08 opcode not supported.
+c3 JMP 08f3
 3a LDA (00eb)
 21 LXI H, #$3c01
-c3 opcode not supported.
-b2 opcode not supported.
-09 DAD	B
+c3 JMP 09b2
 21 LXI H, #$20f4
-c3 opcode not supported.
-31 LXI SP,#$cd19
-5c MOV E,H
-1a LDAX D
-cd opcode not supported.
-1a LDAX D
-19 DAD D
-cd opcode not supported.
-25 DCR H
-19 DAD D
-cd opcode not supported.
-2b DCX H
-19 DAD D
-cd opcode not supported.
-50 MOV D,B
-19 DAD D
-cd opcode not supported.
-3c INR A
-19 DAD D
-c3 opcode not supported.
-47 MOV B,A
-19 DAD D
-cd opcode not supported.
-dc opcode not supported.
-19 DAD D
-c3 opcode not supported.
-71 MOV M,C
-16 MVI	D, #$3e
-01 LXI	B, #$6d32
-20 RIM
-c3 opcode not supported.
-e6 opcode not supported.
-16 MVI	D, #$cd
-d7 opcode not supported.
-19 DAD D
-cd opcode not supported.
-47 MOV B,A
-19 DAD D
-c3 opcode not supported.
-3c INR A
-19 DAD D
+c3 JMP 1931
+cd CALL $1a5c
+cd CALL $191a
+cd CALL $1925
+cd CALL $192b
+cd CALL $1950
+cd CALL $193c
+c3 JMP 1947
+cd CALL $19dc
+c3 JMP 1671
+3e MVI A,#$01
+32 STA (006d)
+c3 JMP 16e6
+cd CALL $19d7
+cd CALL $1947
+c3 JMP 193c
 32 STA (00c1)
-c9 opcode not supported.
-8b opcode not supported.
+c9 RET
+8b ADC E
 19 DAD D
-c3 opcode not supported.
-d6 opcode not supported.
-09 DAD	B
+c3 JMP 09d6
 21 LXI H, #$2803
 11 LXI	D, #$19be
 0e MVI	C, 13
-c3 opcode not supported.
-f3 opcode not supported.
-08 opcode not supported.
+c3 JMP 08f3
 00 NOP
 00 NOP
 00 NOP
 00 NOP
 3a LDA (001e)
-a7 opcode not supported.
-c2 opcode not supported.
-ac opcode not supported.
-19 DAD D
-db opcode not supported.
-01 LXI	B, #$76e6
-d6 opcode not supported.
-72 MOV M,D
-c0 opcode not supported.
+a7 ANA A
+c2 JNZ 19ac
+db IN 01
+e6 ANI 76
+d6 SUI 72
+c0 RNZ
 3c INR A
 32 STA (001e)
-db opcode not supported.
-01 LXI	B, #$76e6
-fe opcode not supported.
-34 INR M
-c0 opcode not supported.
+db IN 01
+e6 ANI 76
+fe CPI 34
+c0 RNZ
 21 LXI H, #$2e1b
 11 LXI	D, #$0bf7
 0e MVI	C, 09
-c3 opcode not supported.
-f3 opcode not supported.
-08 opcode not supported.
+c3 JMP 08f3
 28 opcode not supported.
 13 INX	D
 00 NOP
@@ -5405,53 +4335,38 @@ f3 opcode not supported.
 28 opcode not supported.
 3e MVI A,#$01
 32 STA (00e9)
-c9 opcode not supported.
-af opcode not supported.
-c3 opcode not supported.
-d3 opcode not supported.
-19 DAD D
+c9 RET
+af XRA A
+c3 JMP 19d3
 00 NOP
 3a LDA (0094)
-a0 opcode not supported.
+a0 ANA B
 32 STA (0094)
-d3 opcode not supported.
-03 INX	B
-c9 opcode not supported.
+d3 OUT 03
+c9 RET
 21 LXI H, #$2701
-ca opcode not supported.
-fa opcode not supported.
-19 DAD D
+ca JZ $19fa
 11 LXI	D, #$1c60
 06 MVI	B, 10
 4f MOV C,A
-cd opcode not supported.
-39 DAD SP
-14 INR	D
+cd CALL $1439
 79 MOV A,C
 3d DCR A
-c2 opcode not supported.
-ec opcode not supported.
-19 DAD D
+c2 JNZ 19ec
 06 MVI	B, 10
-cd opcode not supported.
-cb opcode not supported.
-14 INR	D
+cd CALL $14cb
 7c MOV A,H
-fe opcode not supported.
-35 DCR M
-c2 opcode not supported.
-fa opcode not supported.
-19 DAD D
-c9 opcode not supported.
+fe CPI 35
+c2 JNZ 19fa
+c9 RET
 21 LXI H, #$2072
 46 MOV B,M
 1a LDAX D
-e6 opcode not supported.
-80 ADD B
-a8 opcode not supported.
-c0 opcode not supported.
+e6 ANI 80
+a8 XRA B
+c0 RNZ
 37 STC
-c9 opcode not supported.
+c9 RET
 32 STA (002b)
 1c INR E
 16 MVI	D, #$11
@@ -5475,14 +4390,14 @@ c9 opcode not supported.
 09 DAD	B
 07 RLC
 05 DCR	B
-ff opcode not supported.
+ff RST 7
 1a LDAX D
 77 MOV M,A
 23 INX H
 13 INX	D
 05 DCR	B
-c2 opcode not supported.
-32 STA (001a)
+c2 JNZ 1a32
+c9 RET
 5e MOV E,M
 23 INX H
 56 MOV D,M
@@ -5494,8 +4409,8 @@ c2 opcode not supported.
 46 MOV B,M
 61 MOV H,C
 6f MOV L,A
-c9 opcode not supported.
-c5 opcode not supported.
+c9 RET
+c5 PUSH B
 06 MVI	B, 03
 7c MOV A,H
 1f RAR
@@ -5504,75 +4419,57 @@ c5 opcode not supported.
 1f RAR
 6f MOV L,A
 05 DCR	B
-c2 opcode not supported.
-4a MOV C,D
-1a LDAX D
+c2 JNZ 1a4a
 7c MOV A,H
-e6 opcode not supported.
-3f CMC
-f6 opcode not supported.
-20 RIM
+e6 ANI 3f
+f6 ORI 20
 67 MOV H,A
-c1 opcode not supported.
-c9 opcode not supported.
+c1 POP B
+c9 RET
 21 LXI H, #$2400
 36 MVI M, #$00
 23 INX H
 7c MOV A,H
-fe opcode not supported.
-40 MOV B,B
-c2 opcode not supported.
-5f MOV E,A
+fe CPI 40
+c2 JNZ 1a5f
+c9 RET
+c5 PUSH B
+e5 PUSH H
 1a LDAX D
-c9 opcode not supported.
-c5 opcode not supported.
-e5 opcode not supported.
-1a LDAX D
-b6 opcode not supported.
+b6 ORA M
 77 MOV M,A
 13 INX	D
 23 INX H
 0d DCR	C
-c2 opcode not supported.
-6b MOV L,E
-1a LDAX D
-e1 opcode not supported.
+c2 JNZ 1a6b
+e1 POP H
 01 LXI	B, #$0020
 09 DAD	B
-c1 opcode not supported.
+c1 POP B
 05 DCR	B
-c2 opcode not supported.
-69 MOV L,C
-1a LDAX D
-c9 opcode not supported.
-cd opcode not supported.
-2e MVI L, #$09
-a7 opcode not supported.
-c8 opcode not supported.
-f5 opcode not supported.
+c2 JNZ 1a69
+c9 RET
+cd CALL $092e
+a7 ANA A
+c8 RZ
+f5 PUSH PSW
 3d DCR A
 77 MOV M,A
-cd opcode not supported.
-e6 opcode not supported.
-19 DAD D
-f1 opcode not supported.
+cd CALL $19e6
+f1 OP PSW
 21 LXI H, #$2501
-e6 opcode not supported.
-0f RRC
-c3 opcode not supported.
-c5 opcode not supported.
-09 DAD	B
+e6 ANI 0f
+c3 JMP 09c5
 00 NOP
 00 NOP
 00 NOP
 00 NOP
-ff opcode not supported.
-b8 opcode not supported.
-fe opcode not supported.
-20 RIM
+ff RST 7
+b8 CMP B
+fe CPI 20
 1c INR E
 10 opcode not supported.
-9e opcode not supported.
+9e SBB M
 00 NOP
 20 RIM
 1c INR E
@@ -5657,14 +4554,14 @@ fe opcode not supported.
 78 MOV A,B
 38 opcode not supported.
 00 NOP
-f8 opcode not supported.
+f8 RM
 00 NOP
 00 NOP
 80 ADD B
 00 NOP
-8e opcode not supported.
+8e ADC M
 02 STAX	B
-ff opcode not supported.
+ff RST 7
 05 DCR	B
 0c INR	C
 60 MOV H,B
@@ -5676,17 +4573,17 @@ ff opcode not supported.
 00 NOP
 00 NOP
 00 NOP
-bb opcode not supported.
+bb CMP E
 03 INX	B
 00 NOP
 10 opcode not supported.
-90 opcode not supported.
+90 SUB B
 1c INR E
 28 opcode not supported.
 30 SIM
 01 LXI	B, #$0004
-ff opcode not supported.
-ff opcode not supported.
+ff RST 7
+ff RST 7
 00 NOP
 00 NOP
 02 STAX	B
@@ -5698,23 +4595,20 @@ ff opcode not supported.
 00 NOP
 00 NOP
 04 INR	B
-ee opcode not supported.
-1c INR E
+ee XRI 1c
 00 NOP
 00 NOP
 03 INX	B
 00 NOP
 00 NOP
 00 NOP
-b6 opcode not supported.
+b6 ORA M
 04 INR	B
 00 NOP
 00 NOP
 01 LXI	B, #$1d00
 04 INR	B
-e2 opcode not supported.
-1c INR E
-00 NOP
+e2 IPO $001c
 00 NOP
 03 INX	B
 00 NOP
@@ -5725,14 +4619,14 @@ e2 opcode not supported.
 00 NOP
 01 LXI	B, #$1d06
 04 INR	B
-d0 opcode not supported.
+d0 RNC
 1c INR E
 00 NOP
 00 NOP
 03 INX	B
-ff opcode not supported.
+ff RST 7
 00 NOP
-c0 opcode not supported.
+c0 RNZ
 1c INR E
 00 NOP
 00 NOP
@@ -5755,16 +4649,16 @@ c0 opcode not supported.
 04 INR	B
 11 LXI	D, #$1b24
 25 DCR H
-fc opcode not supported.
-00 NOP
-01 LXI	B, #$ffff
+fc CM $0100
+ff RST 7
+ff RST 7
 00 NOP
 00 NOP
 00 NOP
 20 RIM
 64 MOV H,H
 1d DCR E
-d0 opcode not supported.
+d0 RNC
 29 DAD H
 18 opcode not supported.
 02 STAX	B
@@ -5778,7 +4672,7 @@ d0 opcode not supported.
 01 LXI	B, #$0040
 01 LXI	B, #$0000
 10 opcode not supported.
-9e opcode not supported.
+9e SBB M
 00 NOP
 20 RIM
 1c INR E
@@ -5792,21 +4686,19 @@ d0 opcode not supported.
 1a LDAX D
 3d DCR A
 68 MOV L,B
-fc opcode not supported.
-fc opcode not supported.
-68 MOV L,B
+fc CM $68fc
 3d DCR A
 1a LDAX D
 00 NOP
 00 NOP
 00 NOP
 01 LXI	B, #$98b8
-a0 opcode not supported.
+a0 ANA B
 1b DCX D
 10 opcode not supported.
-ff opcode not supported.
+ff RST 7
 00 NOP
-a0 opcode not supported.
+a0 ANA B
 1b DCX D
 00 NOP
 00 NOP
@@ -5822,10 +4714,10 @@ a0 opcode not supported.
 00 NOP
 00 NOP
 07 RLC
-d0 opcode not supported.
+d0 RNC
 1c INR E
-c8 opcode not supported.
-9b opcode not supported.
+c8 RZ
+9b SBB E
 03 INX	B
 00 NOP
 00 NOP
@@ -5836,9 +4728,9 @@ c8 opcode not supported.
 0b DCX	B
 19 DAD D
 3a LDA (006d)
-fa opcode not supported.
-6d MOV L,L
-3a LDA (0019)
+fa JM $3a6d
+19 DAD D
+00 NOP
 00 NOP
 00 NOP
 00 NOP
@@ -5873,12 +4765,8 @@ fa opcode not supported.
 79 MOV A,C
 7a MOV A,D
 6e MOV L,M
-ec opcode not supported.
-fa opcode not supported.
-fa opcode not supported.
-ec opcode not supported.
-6e MOV L,M
-7a MOV A,D
+ec CPE $fafa
+ec CPE $7a6e
 79 MOV A,C
 39 DAD SP
 00 NOP
@@ -5888,13 +4776,13 @@ ec opcode not supported.
 00 NOP
 78 MOV A,B
 1d DCR E
-be opcode not supported.
+be CMP M
 6c MOV L,H
 3c INR A
 3c INR A
 3c INR A
 6c MOV L,H
-be opcode not supported.
+be CMP M
 1d DCR E
 78 MOV A,B
 00 NOP
@@ -5905,9 +4793,9 @@ be opcode not supported.
 00 NOP
 19 DAD D
 3a LDA (006d)
-fa opcode not supported.
-6d MOV L,L
-3a LDA (0019)
+fa JM $3a6d
+19 DAD D
+00 NOP
 00 NOP
 00 NOP
 00 NOP
@@ -5917,12 +4805,8 @@ fa opcode not supported.
 7a MOV A,D
 7f MOV A,A
 6d MOV L,L
-ec opcode not supported.
-fa opcode not supported.
-fa opcode not supported.
-ec opcode not supported.
-6d MOV L,L
-7f MOV A,A
+ec CPE $fafa
+ec CPE $7f6d
 7a MOV A,D
 38 opcode not supported.
 00 NOP
@@ -5931,13 +4815,13 @@ ec opcode not supported.
 00 NOP
 00 NOP
 0e MVI	C, 18
-be opcode not supported.
+be CMP M
 6d MOV L,L
 3d DCR A
 3c INR A
 3d DCR A
 6d MOV L,L
-be opcode not supported.
+be CMP M
 18 opcode not supported.
 0e MVI	C, 00
 00 NOP
@@ -5948,9 +4832,7 @@ be opcode not supported.
 1a LDAX D
 3d DCR A
 68 MOV L,B
-fc opcode not supported.
-fc opcode not supported.
-68 MOV L,B
+fc CM $68fc
 3d DCR A
 1a LDAX D
 00 NOP
@@ -5965,7 +4847,7 @@ fc opcode not supported.
 1f RAR
 1f RAR
 7f MOV A,A
-ff opcode not supported.
+ff RST 7
 7f MOV A,A
 1f RAR
 1f RAR
@@ -5977,7 +4859,7 @@ ff opcode not supported.
 04 INR	B
 01 LXI	B, #$0313
 07 RLC
-b3 opcode not supported.
+b3 ORA E
 0f RRC
 2f CMA
 03 INX	B
@@ -5988,7 +4870,7 @@ b3 opcode not supported.
 00 NOP
 01 LXI	B, #$0840
 05 DCR	B
-a3 opcode not supported.
+a3 ANA E
 0a LDAX	B
 03 INX	B
 5b MOV E,E
@@ -6000,13 +4882,13 @@ a3 opcode not supported.
 40 MOV B,B
 84 ADD H
 11 LXI	D, #$0f48
-99 opcode not supported.
+99 SBB C
 3c INR A
 7e MOV A,M
 3d DCR A
-bc opcode not supported.
+bc CMP H
 3e MVI A,#$7c
-99 opcode not supported.
+99 SBB C
 27 DAA
 1b DCX D
 1a LDAX D
@@ -6052,43 +4934,31 @@ bc opcode not supported.
 00 NOP
 00 NOP
 44 MOV B,H
-aa opcode not supported.
+aa XRA D
 10 opcode not supported.
-88 opcode not supported.
+88 ADC B
 54 MOV D,H
 22 SHLD (0010)
 44 MOV B,H
 22 SHLD (0054)
 4a MOV C,D
 15 DCR	 D
-be opcode not supported.
+be CMP M
 3f CMC
 5e MOV E,M
 25 DCR H
 04 INR	B
-fc opcode not supported.
-04 INR	B
-10 opcode not supported.
-fc opcode not supported.
-10 opcode not supported.
-20 RIM
-fc opcode not supported.
-20 RIM
-80 ADD B
-fc opcode not supported.
-80 ADD B
-00 NOP
-fe opcode not supported.
-00 NOP
+fc CM $1004
+fc CM $2010
+fc CM $8020
+fc CM $0080
+fe CPI 00
 24 INR H
-fe opcode not supported.
-12 STAX	D
+fe CPI 12
 00 NOP
-fe opcode not supported.
-00 NOP
+fe CPI 00
 48 MOV C,B
-fe opcode not supported.
-90 opcode not supported.
+fe CPI 90
 0f RRC
 0b DCX	B
 00 NOP
@@ -6117,58 +4987,54 @@ fe opcode not supported.
 0a LDAX	B
 06 MVI	B, 0a
 03 INX	B
-ff opcode not supported.
+ff RST 7
 0f RRC
-ff opcode not supported.
+ff RST 7
 1f RAR
-ff opcode not supported.
+ff RST 7
 3f CMC
-ff opcode not supported.
+ff RST 7
 7f MOV A,A
-ff opcode not supported.
-ff opcode not supported.
-fc opcode not supported.
-ff opcode not supported.
-f8 opcode not supported.
-ff opcode not supported.
-f0 opcode not supported.
-ff opcode not supported.
-f0 opcode not supported.
-ff opcode not supported.
-f0 opcode not supported.
-ff opcode not supported.
-f0 opcode not supported.
-ff opcode not supported.
-f0 opcode not supported.
-ff opcode not supported.
-f0 opcode not supported.
-ff opcode not supported.
-f0 opcode not supported.
-ff opcode not supported.
-f8 opcode not supported.
-ff opcode not supported.
-fc opcode not supported.
-ff opcode not supported.
-ff opcode not supported.
-ff opcode not supported.
-ff opcode not supported.
-ff opcode not supported.
-ff opcode not supported.
+ff RST 7
+ff RST 7
+fc CM $f8ff
+ff RST 7
+f0 RP
+ff RST 7
+f0 RP
+ff RST 7
+f0 RP
+ff RST 7
+f0 RP
+ff RST 7
+f0 RP
+ff RST 7
+f0 RP
+ff RST 7
+f0 RP
+ff RST 7
+f8 RM
+ff RST 7
+fc CM $ffff
+ff RST 7
+ff RST 7
+ff RST 7
+ff RST 7
 7f MOV A,A
-ff opcode not supported.
+ff RST 7
 3f CMC
-ff opcode not supported.
+ff RST 7
 1f RAR
-ff opcode not supported.
+ff RST 7
 0f RRC
 05 DCR	B
 10 opcode not supported.
 15 DCR	 D
 30 SIM
-94 opcode not supported.
-97 opcode not supported.
-9a opcode not supported.
-9d opcode not supported.
+94 SUB H
+97 SUB A
+9a SBB D
+9d SBB L
 10 opcode not supported.
 05 DCR	B
 05 DCR	B
@@ -6209,20 +5075,20 @@ ff opcode not supported.
 22 SHLD (0000)
 40 MOV B,B
 08 opcode not supported.
-98 opcode not supported.
+98 SBB B
 3d DCR A
-b6 opcode not supported.
+b6 ORA M
 3c INR A
 36 MVI M, #$1d
 10 opcode not supported.
 48 MOV C,B
 62 MOV H,D
-b6 opcode not supported.
+b6 ORA M
 1d DCR E
-98 opcode not supported.
+98 SBB B
 08 opcode not supported.
 42 MOV B,D
-90 opcode not supported.
+90 SUB B
 08 opcode not supported.
 00 NOP
 00 NOP
@@ -6280,9 +5146,9 @@ b6 opcode not supported.
 2c INR L
 00 NOP
 1c INR E
-ff opcode not supported.
+ff RST 7
 0e MVI	C, 2e
-e0 opcode not supported.
+e0 RPO
 1d DCR E
 0c INR	C
 2e MVI L, #$ea
@@ -6293,7 +5159,7 @@ e0 opcode not supported.
 08 opcode not supported.
 2e MVI L, #$99
 1c INR E
-ff opcode not supported.
+ff RST 7
 27 DAA
 38 opcode not supported.
 26 MVI H, #$0c
@@ -6647,9 +5513,7 @@ ff opcode not supported.
 1a LDAX D
 3d DCR A
 68 MOV L,B
-fc opcode not supported.
-fc opcode not supported.
-68 MOV L,B
+fc CM $68fc
 3d DCR A
 1a LDAX D
 00 NOP
@@ -6667,7 +5531,7 @@ fc opcode not supported.
 2a LHLD (0062)
 07 RLC
 2a LHLD (00e1)
-ff opcode not supported.
+ff RST 7
 02 STAX	B
 11 LXI	D, #$0304
 08 opcode not supported.
@@ -6681,9 +5545,9 @@ ff opcode not supported.
 38 opcode not supported.
 19 DAD D
 3a LDA (006d)
-fa opcode not supported.
-6d MOV L,L
-3a LDA (0019)
+fa JM $3a6d
+19 DAD D
+00 NOP
 00 NOP
 20 RIM
 40 MOV B,B
@@ -6695,13 +5559,13 @@ fa opcode not supported.
 00 NOP
 00 NOP
 00 NOP
-ff opcode not supported.
-b8 opcode not supported.
-ff opcode not supported.
+ff RST 7
+b8 CMP B
+ff RST 7
 80 ADD B
 1f RAR
 10 opcode not supported.
-97 opcode not supported.
+97 SUB A
 00 NOP
 80 ADD B
 1f RAR
@@ -6711,7 +5575,7 @@ ff opcode not supported.
 20 RIM
 1c INR E
 10 opcode not supported.
-94 opcode not supported.
+94 SUB H
 00 NOP
 20 RIM
 1c INR E
