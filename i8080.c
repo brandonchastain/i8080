@@ -2,12 +2,14 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#define DEBUG 1
+
 typedef struct conditionCodes {
 	uint8_t z:1;
 	uint8_t s:1;
 	uint8_t p:1;
 	uint8_t cy:1;
-	uint8_t ac:1;
+	uint8_t ac:1; //not implemented, not used by Space Invaders
 	uint8_t   :3; //padding
 } conditionCodes;
 
@@ -38,12 +40,57 @@ void emulateOp(state8080 *state) {
 	switch (*opcode) {
 		case 0x00: break; //NOP
 		case 0x01: //LXI B,word
+			if(DEBUG) printf("LXI B\n");
 			state->b = opcode[2];
 			state->c = opcode[1];
 			state->pc += 2;
 			break;
+		case 0x80: //ADD B, reg add
+			if(DEBUG) printf("Adding B to A.\n");
+			addToA(state, state->b);
+			break;
+		case 0x81: //ADD C
+			if(DEBUG) printf("Adding C to A.\n");
+			addToA(state, state->c);
+			break;
+		case 0x86: //ADD M, mem add
+			if(DEBUG) printf("Adding Mem[HL] to A.\n");
+			uint16_t offset = (state->h<<8) | (state->l);
+			addToA(state, state->memory[offset]);
+			break;
+		case 0xc6: //ADI byte, imm add
+			if(DEBUG) printf("Adding imm %02x to A.\n", opcode[1]);
+			addToA(state, (uint16_t)opcode[1]);
+			break;
+
 		default: unimplementedInstr(state); break;
 	}
+}
+
+void addToA(state8080 *state, uint8_t value){
+	uint16_t answer = (uint16_t)state->a + (uint16_t)regValue;
+	setZFlag(state, answer);
+	setSFlag(state, answer);
+	setCYFlag(state, answer);
+	setPFlag(state, answer);
+	state->a = answer & 0xff;
+	if(DEBUG) printf("Add result: $%02x\n", state->a);
+}
+
+void setZFlag(state8080 *state, uint16_t answer) {
+	state->cc.z = !(answer & 0xff);
+}
+
+void setSFlag(state8080 *state, uint16_t answer) {
+	state->cc.s = answer & 0x80;
+}
+
+void setCYFlag(state8080 *state, uint16_t answer) {
+	state->cc.cy = answer > 0xff;
+}
+
+void setPFlag(state8080 *state, uint16_t answer) {
+	state->cc.p = ~(answer & 0x01);
 }
 
 int main(int argc, char **argv) {
