@@ -28,6 +28,8 @@ typedef struct state8080 {
 	uint8_t int_enable;
 } state8080;
 
+typedef enum {ADD, SUB} carry_kind;
+
 void unimplementedInstr(state8080*);
 void emulateOp(state8080*);
 
@@ -127,7 +129,6 @@ void emulateOp(state8080 *state) {
 			adcToA(state, state->a);
 			break;
 		
-		
 
 		//Memory Form---
 		//ADD M (A <- mem[HL])
@@ -182,6 +183,15 @@ void adcToA(state8080 *state, uint8_t value){
 	if(DEBUG) printf("Adc result: $%02x\n", state->a);
 }
 
+void subFromA(state8080 *state, uint8_t value){
+	uint16_t answer = (uint16_t)state->a - (uint16_t)value;
+	setZFlag(state, answer);
+	setSFlag(state, answer);
+	setPFlag(state, answer);
+	setCYFlag(state, answer);
+
+}
+
 void setZFlag(state8080 *state, uint16_t answer) {
 	state->cc.z = !(answer & 0xff);
 }
@@ -190,8 +200,14 @@ void setSFlag(state8080 *state, uint16_t answer) {
 	state->cc.s = answer & 0x80;
 }
 
-void setCYFlag(state8080 *state, uint16_t answer) {
-	state->cc.cy = answer > 0xff;
+void setCYFlag(state8080 *state, uint16_t answer, carry_kind kind) {
+	//TODO: This is probably incorrect and should be fixed.
+	//This looks useful: http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt
+	if (kind == ADD) {
+		state->cc.cy = answer > 0xff;
+	} else {
+		state->cc.cy = answer < 0x00;
+	}
 }
 
 void setPFlag(state8080 *state, uint16_t answer) {
