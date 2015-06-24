@@ -28,6 +28,14 @@ typedef struct state8080 {
 	uint8_t int_enable;
 } state8080;
 
+void unimplementedInstr(state8080*);
+void emulateOp(state8080*);
+void addToA(state8080*, uint8_t);
+void setZFlag(state8080*, uint16_t);
+void setSFlag(state8080*, uint16_t);
+void setCYFlag(state8080*, uint16_t);
+void setPFlag(state8080*, uint16_t);
+
 void unimplementedInstr(state8080 *state) {
 	state->pc -= 1;
 	printf("Error: Unimplemented instruction $%02x @ address $%04x\n", state->memory[state->pc], state->pc);
@@ -45,22 +53,53 @@ void emulateOp(state8080 *state) {
 			state->c = opcode[1];
 			state->pc += 2;
 			break;
-		case 0x80: //ADD B, reg add
+
+		//Arithmetic----------------------------
+
+		// Register Form---
+		// ADD reg (A <- A + reg)
+		case 0x80: //ADD B
 			if(DEBUG) printf("Adding B to A.\n");
 			addToA(state, state->b);
 			break;
-		case 0x81: //ADD C
+		case 0x81: //C
 			if(DEBUG) printf("Adding C to A.\n");
 			addToA(state, state->c);
 			break;
-		case 0x86: //ADD M, mem add
+		case 0x82: //D
+			if(DEBUG) printf("Adding D to a.\n");
+			addToA(state, state->d);
+			break;
+		case 0x83: //E
+			if(DEBUG) printf("Adding E to a.\n");
+			addToA(state, state->e);
+			break;
+		case 0x84: //H
+			if(DEBUG) printf("Adding H to a.\n");
+			addToA(state, state->h);
+			break;
+		case 0x85: //L
+			if(DEBUG) printf("Adding L to a.\n");
+			addToA(state, state->l);
+			break;
+		case 0x87: //A
+			if(DEBUG) printf("Adding A to A.\n");
+			addToA(state, state->a);
+			break;
+
+		//Memory Form---
+		//ADD M (A <- mem[HL])
+		case 0x86:
 			if(DEBUG) printf("Adding Mem[HL] to A.\n");
 			uint16_t offset = (state->h<<8) | (state->l);
 			addToA(state, state->memory[offset]);
 			break;
+		
+		//Immediate Form---
+		//ADI byte (A <- A + D8)
 		case 0xc6: //ADI byte, imm add
 			if(DEBUG) printf("Adding imm %02x to A.\n", opcode[1]);
-			addToA(state, (uint16_t)opcode[1]);
+			addToA(state, opcode[1]);
 			break;
 
 		default: unimplementedInstr(state); break;
@@ -68,7 +107,7 @@ void emulateOp(state8080 *state) {
 }
 
 void addToA(state8080 *state, uint8_t value){
-	uint16_t answer = (uint16_t)state->a + (uint16_t)regValue;
+	uint16_t answer = (uint16_t)state->a + (uint16_t)value;
 	setZFlag(state, answer);
 	setSFlag(state, answer);
 	setCYFlag(state, answer);
