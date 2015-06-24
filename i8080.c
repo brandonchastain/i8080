@@ -166,7 +166,7 @@ void addToA(state8080 *state, uint8_t value){
 	uint16_t answer = (uint16_t)state->a + (uint16_t)value;
 	setZFlag(state, answer);
 	setSFlag(state, answer);
-	setCYFlag(state, answer);
+	setCYFlag(state, answer, ADD);
 	setPFlag(state, answer);
 	state->a = answer & 0xff;
 	if(DEBUG) printf("Add result: $%02x\n", state->a);
@@ -177,7 +177,7 @@ void adcToA(state8080 *state, uint8_t value){
 	answer += state->cc.cy;
 	setZFlag(state, answer);
 	setSFlag(state, answer);
-	setCYFlag(state, answer);
+	setCYFlag(state, answer, ADD);
 	setPFlag(state, answer);
 	state->a = answer & 0xff;
 	if(DEBUG) printf("Adc result: $%02x\n", state->a);
@@ -188,8 +188,8 @@ void subFromA(state8080 *state, uint8_t value){
 	setZFlag(state, answer);
 	setSFlag(state, answer);
 	setPFlag(state, answer);
-	setCYFlag(state, answer);
-
+	setCYFlag(state, answer, SUB);
+	if(DEBUG) printf("SUB result: $%02x\n", state->a);
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
@@ -201,12 +201,12 @@ void setSFlag(state8080 *state, uint16_t answer) {
 }
 
 void setCYFlag(state8080 *state, uint16_t answer, carry_kind kind) {
-	//TODO: This is probably incorrect and should be fixed.
+	//TODO: This might be incorrect.
 	//This looks useful: http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt
 	if (kind == ADD) {
 		state->cc.cy = answer > 0xff;
 	} else {
-		state->cc.cy = answer < 0x00;
+		state->cc.cy = answer < 0;
 	}
 }
 
