@@ -30,11 +30,17 @@ typedef struct state8080 {
 
 void unimplementedInstr(state8080*);
 void emulateOp(state8080*);
+
 void addToA(state8080*, uint8_t);
+void adcToA(state8080*, uint8_t);
+
 void setZFlag(state8080*, uint16_t);
 void setSFlag(state8080*, uint16_t);
 void setCYFlag(state8080*, uint16_t);
 void setPFlag(state8080*, uint16_t);
+
+uint16_t getMemOffset(state8080*);
+
 
 void unimplementedInstr(state8080 *state) {
 	state->pc -= 1;
@@ -44,6 +50,7 @@ void unimplementedInstr(state8080 *state) {
 
 void emulateOp(state8080 *state) {
 	uint8_t *opcode = &(state->memory[state->pc]);
+	uint16_t offset = getMemOffset(state);
 	state->pc += 1;
 	switch (*opcode) {
 		case 0x00: break; //NOP
@@ -53,7 +60,10 @@ void emulateOp(state8080 *state) {
 			state->c = opcode[1];
 			state->pc += 2;
 			break;
-
+		case 0xc3: //JMP
+			if(DEBUG) printf("JMP $%02x%02x\n", opcode[2], opcode[1]);
+			state->pc = (opcode[2] << 8) | (opcode[1]);
+			break;
 		//Arithmetic----------------------------
 
 		// Register Form---
@@ -87,23 +97,68 @@ void emulateOp(state8080 *state) {
 			addToA(state, state->a);
 			break;
 
+		//ADC reg (A <- A + reg + CY)
+		case 0x88: //B
+			if(DEBUG) printf("Adc B\n");
+			adcToA(state, state->b);
+			break;
+		case 0x89: //C
+			if(DEBUG) printf("Adc C\n");
+			adcToA(state, state->c);
+			break;
+		case 0x8a: //D
+			if(DEBUG) printf("Adc D\n");
+			adcToA(state, state->d);
+			break;
+		case 0x8b: //E
+			if(DEBUG) printf("Adc E\n");
+			adcToA(state, state->e);
+			break;
+		case 0x8c: //H
+			if(DEBUG) printf("Adc H\n");
+			adcToA(state, state->h);
+			break;
+		case 0x8d: //L
+			if(DEBUG) printf("Adc L\n");
+			adcToA(state, state->l);
+			break;
+		case 0x8f: //A
+			if(DEBUG) printf("Adc A\n");
+			adcToA(state, state->a);
+			break;
+		
+		
+
 		//Memory Form---
 		//ADD M (A <- mem[HL])
 		case 0x86:
 			if(DEBUG) printf("Adding Mem[HL] to A.\n");
-			uint16_t offset = (state->h<<8) | (state->l);
 			addToA(state, state->memory[offset]);
 			break;
-		
+		//ADC M (A <- mem[HL] + CY)
+		case 0x8e: //Mem
+			if(DEBUG) printf("Adc Mem[HL]\n");
+			adcToA(state, state->memory[offset]);
+			break;
+
 		//Immediate Form---
 		//ADI byte (A <- A + D8)
 		case 0xc6: //ADI byte, imm add
 			if(DEBUG) printf("Adding imm %02x to A.\n", opcode[1]);
 			addToA(state, opcode[1]);
 			break;
+		//ACI byte (A <- A + D8 + CY)
+		case 0xce:
+			if(DEBUG) printf("Adc imm %02x to A\n", opcode[1]);
+			adcToA(state, opcode[1]);
+			break;
 
 		default: unimplementedInstr(state); break;
 	}
+}
+
+uint16_t getMemOffset(state8080 *state) {
+	return (state->h<<8) | (state->l);
 }
 
 void addToA(state8080 *state, uint8_t value){
@@ -114,6 +169,17 @@ void addToA(state8080 *state, uint8_t value){
 	setPFlag(state, answer);
 	state->a = answer & 0xff;
 	if(DEBUG) printf("Add result: $%02x\n", state->a);
+}
+
+void adcToA(state8080 *state, uint8_t value){
+	uint16_t answer = (uint16_t)state->a + (uint16_t)value;
+	answer += state->cc.cy;
+	setZFlag(state, answer);
+	setSFlag(state, answer);
+	setCYFlag(state, answer);
+	setPFlag(state, answer);
+	state->a = answer & 0xff;
+	if(DEBUG) printf("Adc result: $%02x\n", state->a);
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
