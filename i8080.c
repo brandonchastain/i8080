@@ -35,11 +35,13 @@ void emulateOp(state8080*);
 
 void addToA(state8080*, uint8_t);
 void adcToA(state8080*, uint8_t);
+void subFromA(state8080 *, uint8_t);
 
 void setZFlag(state8080*, uint16_t);
 void setSFlag(state8080*, uint16_t);
-void setCYFlag(state8080*, uint16_t);
+void setCYFlag(state8080*, uint16_t, carry_kind);
 void setPFlag(state8080*, uint16_t);
+void printFlags(state8080*);
 
 uint16_t getMemOffset(state8080*);
 
@@ -71,87 +73,144 @@ void emulateOp(state8080 *state) {
 		// Register Form---
 		// ADD reg (A <- A + reg)
 		case 0x80: //ADD B
-			if(DEBUG) printf("Adding B to A.\n");
+			if(DEBUG) printf("Adding B to A.\t");
 			addToA(state, state->b);
 			break;
 		case 0x81: //C
-			if(DEBUG) printf("Adding C to A.\n");
+			if(DEBUG) printf("Adding C to A.\t");
 			addToA(state, state->c);
 			break;
 		case 0x82: //D
-			if(DEBUG) printf("Adding D to a.\n");
+			if(DEBUG) printf("Adding D to a.\t");
 			addToA(state, state->d);
 			break;
 		case 0x83: //E
-			if(DEBUG) printf("Adding E to a.\n");
+			if(DEBUG) printf("Adding E to a.\t");
 			addToA(state, state->e);
 			break;
 		case 0x84: //H
-			if(DEBUG) printf("Adding H to a.\n");
+			if(DEBUG) printf("Adding H to a.\t");
 			addToA(state, state->h);
 			break;
 		case 0x85: //L
-			if(DEBUG) printf("Adding L to a.\n");
+			if(DEBUG) printf("Adding L to a.\t");
 			addToA(state, state->l);
 			break;
 		case 0x87: //A
-			if(DEBUG) printf("Adding A to A.\n");
+			if(DEBUG) printf("Adding A to A.\t");
 			addToA(state, state->a);
 			break;
 
 		//ADC reg (A <- A + reg + CY)
 		case 0x88: //B
-			if(DEBUG) printf("Adc B\n");
+			if(DEBUG) printf("Adc B\t");
 			adcToA(state, state->b);
 			break;
 		case 0x89: //C
-			if(DEBUG) printf("Adc C\n");
+			if(DEBUG) printf("Adc C\t");
 			adcToA(state, state->c);
 			break;
 		case 0x8a: //D
-			if(DEBUG) printf("Adc D\n");
+			if(DEBUG) printf("Adc D\t");
 			adcToA(state, state->d);
 			break;
 		case 0x8b: //E
-			if(DEBUG) printf("Adc E\n");
+			if(DEBUG) printf("Adc E\t");
 			adcToA(state, state->e);
 			break;
 		case 0x8c: //H
-			if(DEBUG) printf("Adc H\n");
+			if(DEBUG) printf("Adc H\t");
 			adcToA(state, state->h);
 			break;
 		case 0x8d: //L
-			if(DEBUG) printf("Adc L\n");
+			if(DEBUG) printf("Adc L\t");
 			adcToA(state, state->l);
 			break;
 		case 0x8f: //A
-			if(DEBUG) printf("Adc A\n");
+			if(DEBUG) printf("Adc A\t");
 			adcToA(state, state->a);
 			break;
 		
+		//SUB reg (A <- A - reg)
+		case 0x90:
+			if(DEBUG) printf("Sub B from A\t");
+			subFromA(state, state->b);
+			break;
+		case 0x91:
+			if(DEBUG) printf("Sub C from A\t");
+			subFromA(state, state->c);
+			break;
+		case 0x92:
+			if(DEBUG) printf("Sub D from A\t");
+			subFromA(state, state->d);
+			break;
+		case 0x93:
+			if(DEBUG) printf("Sub E from A\t");
+			subFromA(state, state->e);
+			break;
+		case 0x94:
+			if(DEBUG) printf("Sub H from A\t");
+			subFromA(state, state->h);
+			break;
+		case 0x95:
+			if(DEBUG) printf("Sub L from A\t");
+			subFromA(state, state->l);
+			break;
+		case 0x97:
+			if(DEBUG) printf("Sub A from A\t");
+			subFromA(state, state->a);
+			break;
+
+		//SBB reg (A <- A - reg - CY)
+		case 0x98:
+		case 0x99:
+		case 0x9a:
+		case 0x9b:
+		case 0x9c:
+		case 0x9d:
+		case 0x9f:
+			//TODO
+			break;
 
 		//Memory Form---
 		//ADD M (A <- mem[HL])
 		case 0x86:
-			if(DEBUG) printf("Adding Mem[HL] to A.\n");
+			if(DEBUG) printf("Adding Mem[HL] to A.\t");
 			addToA(state, state->memory[offset]);
 			break;
 		//ADC M (A <- mem[HL] + CY)
 		case 0x8e: //Mem
-			if(DEBUG) printf("Adc Mem[HL]\n");
+			if(DEBUG) printf("Adc Mem[HL]\t");
 			adcToA(state, state->memory[offset]);
+			break;
+		//SUB M (A <- mem[HL])
+		case 0x96:
+			if(DEBUG) printf("Sub Mem[HL]\t");
+			subFromA(state, state->memory[offset]);
+			break;
+		//SBB M (A <- mem[HL] - CY)
+		case 0x9e:
+			//TODO
 			break;
 
 		//Immediate Form---
 		//ADI byte (A <- A + D8)
 		case 0xc6: //ADI byte, imm add
-			if(DEBUG) printf("Adding imm %02x to A.\n", opcode[1]);
+			if(DEBUG) printf("Adding $%02x to A.\t", opcode[1]);
 			addToA(state, opcode[1]);
+			state->pc += 1;
 			break;
 		//ACI byte (A <- A + D8 + CY)
 		case 0xce:
-			if(DEBUG) printf("Adc imm %02x to A\n", opcode[1]);
+			if(DEBUG) printf("Adc $%02x to A\t", opcode[1]);
 			adcToA(state, opcode[1]);
+			state->pc += 1;
+			break;
+		//SUI byte (A <- A - D8)
+		case 0xd6:
+			if(DEBUG) printf("SUI $%02x from A\t", opcode[1]);
+			subFromA(state, opcode[1]);
+			state->pc += 1;
 			break;
 
 		default: unimplementedInstr(state); break;
@@ -169,7 +228,8 @@ void addToA(state8080 *state, uint8_t value){
 	setCYFlag(state, answer, ADD);
 	setPFlag(state, answer);
 	state->a = answer & 0xff;
-	if(DEBUG) printf("Add result: $%02x\n", state->a);
+	if(DEBUG) printf("Add result: $%02x\t", state->a);
+	printFlags(state);
 }
 
 void adcToA(state8080 *state, uint8_t value){
@@ -180,7 +240,8 @@ void adcToA(state8080 *state, uint8_t value){
 	setCYFlag(state, answer, ADD);
 	setPFlag(state, answer);
 	state->a = answer & 0xff;
-	if(DEBUG) printf("Adc result: $%02x\n", state->a);
+	if(DEBUG) printf("Adc result: $%02x\t", state->a);
+	printFlags(state);
 }
 
 void subFromA(state8080 *state, uint8_t value){
@@ -189,7 +250,12 @@ void subFromA(state8080 *state, uint8_t value){
 	setSFlag(state, answer);
 	setPFlag(state, answer);
 	setCYFlag(state, answer, SUB);
-	if(DEBUG) printf("SUB result: $%02x\n", state->a);
+	if(DEBUG) printf("SUB result: $%02x\t", state->a);
+	printFlags(state);
+}
+
+void sbbFromA(state8080 *state, uint8_t value){
+	//TODO
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
@@ -212,6 +278,10 @@ void setCYFlag(state8080 *state, uint16_t answer, carry_kind kind) {
 
 void setPFlag(state8080 *state, uint16_t answer) {
 	state->cc.p = ~(answer & 0x01);
+}
+
+void printFlags(state8080 *state) {
+	if(DEBUG) printf("Z:%1d S:%1d P:%1d CY:%1d\n", state->cc.z, state->cc.s, state->cc.p, state->cc.cy);
 }
 
 int main(int argc, char **argv) {
