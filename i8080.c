@@ -298,11 +298,13 @@ void emulateOp(state8080 *state) {
 			setSFlag(state, answer);
 			setPFlag(state, answer);
 			break;
-		//INX (BC <- BC - 1)
+		//INX (BC <- BC + 1)
 		case 0x03://B
 			if(DEBUG) printf("inx b\t");
 			//how to do...
-			//if(DEBUG) printf("inx result: $%04x\n", *ptr);
+			int bc = (state->b << 8) | (state->a);
+			state->b = ((bc + 1) & 0xf0) | (0x0f & (bc + 1));
+			if(DEBUG) printf("inx result: $%04x\n", state->b);
 			break;
 
 		//Memory Form---
