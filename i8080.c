@@ -302,7 +302,7 @@ void emulateOp(state8080 *state) {
 		case 0x03://B
 			if(DEBUG) printf("inx b\t");
 			//how to do...
-			if(DEBUG) printf("inx result: $%04x\n", *ptr);
+			//if(DEBUG) printf("inx result: $%04x\n", *ptr);
 			break;
 
 		//Memory Form---
