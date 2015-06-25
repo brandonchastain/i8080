@@ -291,13 +291,18 @@ void emulateOp(state8080 *state) {
 			setSFlag(state, answer);
 			setPFlag(state, answer);
 			break;
-					//mem
 		case 0x3d: //A
 			if(DEBUG) printf("dcr reg $%02x\n", *opcode);
 			answer = state->a -= 1;
 			setZFlag(state, answer);
 			setSFlag(state, answer);
 			setPFlag(state, answer);
+			break;
+		//INX (BC <- BC - 1)
+		case 0x03://B
+			if(DEBUG) printf("inx b\t");
+			//how to do...
+			if(DEBUG) printf("inx result: $%04x\n", *ptr);
 			break;
 
 		//Memory Form---
