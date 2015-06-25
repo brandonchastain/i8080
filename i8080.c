@@ -29,6 +29,7 @@ typedef struct state8080 {
 } state8080;
 
 typedef enum {ADD, SUB} carry_kind;
+typedef enum {BC, DE, HL} registerPair_kind;
 
 //emulating operations
 void unimplementedInstr(state8080*);
@@ -39,6 +40,8 @@ void addToA(state8080*, uint8_t);
 void adcToA(state8080*, uint8_t);
 void subFromA(state8080*, uint8_t);
 void sbbFromA(state8080*, uint8_t);
+void addRPtoHL(state8080*, registerPair_kind);
+void decrRP(state8080*, registerPair_kind);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -298,13 +301,71 @@ void emulateOp(state8080 *state) {
 			setSFlag(state, answer);
 			setPFlag(state, answer);
 			break;
-		//INX (BC <- BC + 1)
-		case 0x03://B
+
+		//INX rp (rp <- rp + 1) rp = {BC, DE, HL}
+		case 0x03://BC
 			if(DEBUG) printf("inx b\t");
-			//how to do...
-			int bc = (state->b << 8) | (state->a);
-			state->b = ((bc + 1) & 0xf0) | (0x0f & (bc + 1));
-			if(DEBUG) printf("inx result: $%04x\n", state->b);
+			uint16_t c = (uint16_t)state->c + 1;
+			if (c > 0xff) {
+				state->b += 1;
+			}
+			state->c = c & 0xff;
+			if(DEBUG) printf("inx result: $%02x%02x\n", state->b, state->c);
+			break;
+		case 0x13://DE
+			if(DEBUG) printf("inx d\t");
+			uint16_t e = (uint16_t)state->e + 1;
+			if (e > 0xff) {
+				state->d += 1;
+			}
+			state->e = e & 0xff;
+			if(DEBUG) printf("inx result: $%02x%02x\n", state->d, state->e);
+			break;
+		case 0x23://HL
+			if(DEBUG) printf("inx h\t");
+			uint16_t l = (uint16_t)state->l + 1;
+			if (l > 0xff) {
+				state->h += 1;
+			}
+			state->l = l & 0xff;
+			if(DEBUG) printf("inx result: $%02x%02x\n", state->b, state->c);
+			break;
+		//DCX rp (rp <- rp - 1), rp = {BC, DE, HL}
+		case 0x0b://BC
+			if(DEBUG) printf("dcx b\t");
+			decrRP(state, BC);
+			if(DEBUG) printf("dcx result: $%02x%02x\n", state->b, state->c);
+			break;
+		case 0x1b://DE
+			if(DEBUG) printf("dcx d\t");
+			// uint16_t e = (uint16_t)state->e;
+			// if (e == 0x00) {
+			// 	state->d -= 1;
+			// }
+			// state->e = (e - 1) & 0xff;
+			decrRP(state, DE);
+			if(DEBUG) printf("dcx result: $%02x%02x\n", state->d, state->e);
+			break;
+		case 0x2b://HL
+			if(DEBUG) printf("dcx h\t");
+			decrRP(state, HL);
+			if(DEBUG) printf("dcx result: $%02x%02x\n", state->h, state->l);
+			break;
+		//DAD rp (HL <- HL + rp)
+		case 0x09: //BC
+			if(DEBUG) printf("DAD BC\t");
+			addRPtoHL(state, BC);
+			if(DEBUG) printf("DAD result: %02x%02x\n", state->h, state->l);
+			break;
+		case 0x19: //DE
+			if(DEBUG) printf("DAD DE\t");
+			addRPtoHL(state, DE);
+			if(DEBUG) printf("DAD result: %02x%02x\n", state->h, state->l);
+			break;
+		case 0x29: //HL
+			if(DEBUG) printf("DAD HL\t");
+			addRPtoHL(state, HL);
+			if(DEBUG) printf("DAD result: %02x%02x\n", state->h, state->l);
 			break;
 
 		//Memory Form---
@@ -423,6 +484,42 @@ void sbbFromA(state8080 *state, uint8_t value){
 	state->a = answer & 0xff;
 	if(DEBUG) printf("Sbb result: $%02x\t", state->a);
 	printFlags(state);
+}
+
+void decrRP(state8080 *state, registerPair_kind rp){
+	uint8_t *rh, *rl;
+	switch(rp) {
+		case BC: rh = &state->b; rl = &state->c; break;
+		case DE: rh = &state->d; rl = &state->e; break;
+		case HL: rh = &state->h; rl = &state->l; break;
+	}
+
+	uint16_t temp = (uint16_t)*rl;
+	if (temp == 0x00) {
+		*rh -= 1;
+	}
+	*rl = (*rl - 1) & 0xff;
+}
+
+void addRPtoHL(state8080 *state, registerPair_kind rp) {
+	uint32_t rp1;
+	uint32_t rp2 = (state->h << 8) | state->l;
+	switch(rp) {
+		case BC:
+			rp1 = (state->b << 8) | state->c;
+			break;
+		case DE:
+			rp1 = (state->d << 8) | state->e;
+			break;
+		case HL:
+		default:
+			rp1 = (state->h << 8) | state->l;
+			break;
+	}
+	uint32_t answer = rp1 + rp2;
+	state->cc.cy = answer > 0xffff;
+	state->h = (answer >> 8) & 0xff;
+	state->l = answer & 0xff;
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
