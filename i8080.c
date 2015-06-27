@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define DEBUG 1
+#define PRINT_DEBUG 1
+#define DEBUG (PRINT_DEBUG && !isStepMode)
 
 typedef struct conditionCodes {
 	uint8_t z:1; //zero
@@ -31,6 +32,8 @@ typedef struct state8080 {
 typedef enum {ADD, SUB} carry_kind;
 typedef enum {BC, DE, HL} registerPair_kind;
 
+static uint8_t isStepMode = 0;
+
 //emulating operations
 void unimplementedInstr(state8080*);
 void emulateOp(state8080*);
@@ -54,6 +57,7 @@ void setSFlag(state8080*, uint16_t);
 void setCYFlag(state8080*, uint8_t, uint8_t, carry_kind);
 void setPFlag(state8080*, uint16_t);
 void printFlags(state8080*);
+void debugPrint(state8080*);
 
 //Memory utility
 uint16_t getMemOffset(state8080*);
@@ -533,7 +537,6 @@ void addToA(state8080 *state, uint8_t value){
 	setPFlag(state, answer);
 	state->a = answer & 0xff;
 	if(DEBUG) printf("Add result: $%02x\t", state->a);
-	printFlags(state);
 }
 
 void adcToA(state8080 *state, uint8_t value){
@@ -545,7 +548,6 @@ void adcToA(state8080 *state, uint8_t value){
 	setPFlag(state, answer);
 	state->a = answer & 0xff;
 	if(DEBUG) printf("Adc result: $%02x\t", state->a);
-	printFlags(state);
 }
 
 void subFromA(state8080 *state, uint8_t value){
@@ -556,7 +558,6 @@ void subFromA(state8080 *state, uint8_t value){
 	setCYFlag(state, state->a, value, SUB);
 	state->a = answer & 0xff;
 	if(DEBUG) printf("SUB result: $%02x\t", state->a);
-	printFlags(state);
 }
 
 void sbbFromA(state8080 *state, uint8_t value){
@@ -568,7 +569,6 @@ void sbbFromA(state8080 *state, uint8_t value){
 	setPFlag(state, answer);
 	state->a = answer & 0xff;
 	if(DEBUG) printf("Sbb result: $%02x\t", state->a);
-	printFlags(state);
 }
 
 void decrRP(state8080 *state, registerPair_kind rp){
@@ -663,7 +663,21 @@ void setPFlag(state8080 *state, uint16_t answer) {
 }
 
 void printFlags(state8080 *state) {
-	if(DEBUG) printf("Z:%1d S:%1d P:%1d CY:%1d\n", state->cc.z, state->cc.s, state->cc.p, state->cc.cy);
+	printf("Z:%1d S:%1d P:%1d CY:%1d\n", state->cc.z, state->cc.s, state->cc.p, state->cc.cy);
+}
+
+void debugPrint(state8080 *state) {
+    printf("Regs:\n");
+    printf("A: $%02x\n\
+            B: $%02x\tC: $%02x\n\
+            D: $%02x\tE: $%02x\n\
+            H: $%02x\tL: $%02x\n",
+            state->a,
+            state->b, state->c,
+            state->d, state->e,
+            state->h, state->l);
+    printf("Flags:\n");
+    printFlags(state);
 }
 
 int main(int argc, char **argv) {
@@ -684,9 +698,13 @@ int main(int argc, char **argv) {
 
 	state.memory = buffer;
 
-	while (state.pc < fsize) {
-		emulateOp(&state);
-	}
+    while (state.pc < fsize) {
+    	emulateOp(&state);
+        if (DEBUG) printFlags(&state);
+        if (isStepMode) {
+            //wait for user to hit enter
+        }
+    }
 
 	free(buffer);
 	return 0;
