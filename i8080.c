@@ -5,10 +5,10 @@
 #define DEBUG 1
 
 typedef struct conditionCodes {
-	uint8_t z:1;
-	uint8_t s:1;
-	uint8_t p:1;
-	uint8_t cy:1;
+	uint8_t z:1; //zero
+	uint8_t s:1; //sign, 1 if -, 0 if +
+	uint8_t p:1; //parity, 1 if even, 0 if odd
+	uint8_t cy:1; //carry
 	uint8_t ac:1; //not implemented, not used by Space Invaders
 	uint8_t   :3; //padding
 } conditionCodes;
@@ -44,6 +44,10 @@ void addRPtoHL(state8080*, registerPair_kind);
 void decrRP(state8080*, registerPair_kind);
 void daa(state8080*);
 
+void jmp(state8080*, uint8_t*);
+void call(state8080*, uint8_t*);
+void ret(state8080*);
+
 //condition flags
 void setZFlag(state8080*, uint16_t);
 void setSFlag(state8080*, uint16_t);
@@ -53,7 +57,6 @@ void printFlags(state8080*);
 
 //Memory utility
 uint16_t getMemOffset(state8080*);
-
 
 void unimplementedInstr(state8080 *state) {
 	state->pc -= 1;
@@ -74,10 +77,84 @@ void emulateOp(state8080 *state) {
 			state->c = opcode[1];
 			state->pc += 2;
 			break;
+        //Branching----------------------------
+        //JMP addr
 		case 0xc3: //JMP
 			if(DEBUG) printf("JMP $%02x%02x\n", opcode[2], opcode[1]);
-			state->pc = (opcode[2] << 8) | (opcode[1]);
+            jmp(state, opcode);
 			break;
+        //Jcondition addr (if (cond) pc <- addr, else pc <- pc + 2
+        case 0xc2: //JNZ
+            if(DEBUG) printf("JNZ $%02x%02x\n", opcode[2], opcode[1]);
+            if (state->cc.z == 0){
+                jmp(state, opcode);
+            } else {
+                state->pc += 2;
+            }
+            break;
+        case 0xca: //JZ
+            if(DEBUG) printf("JZ $%02x%02x\n", opcode[2], opcode[1]);
+            if (state->cc.z) {
+                jmp(state, opcode);
+            } else {
+                state->pc += 2;
+            }
+            break;
+        case 0xd2: //JNC
+            if(DEBUG) printf("JNC $%02x%02x\n", opcode[2], opcode[1]);
+            if (state->cc.cy == 0){
+                jmp(state, opcode);
+            } else {
+                state->pc += 2;
+            }
+            break;
+        case 0xda: //JC
+            if(DEBUG) printf("JC $%02x%02x\n", opcode[2], opcode[1]);
+            if (state->cc.cy){
+                jmp(state, opcode);
+            } else {
+                state->pc += 2;
+            }
+            break;
+        //it's possible I have the next two mixed up
+        case 0xe2: //JPO
+            if(DEBUG) printf("JPO $%02x%02x\n", opcode[2], opcode[1]);
+            if (state->cc.p == 0){
+                jmp(state, opcode);
+            } else {
+                state->pc += 2;
+            }
+            break;
+        case 0xea: //JPE
+            if(DEBUG) printf("JPE $%02x%02x\n", opcode[2], opcode[1]);
+            if (state->cc.p){
+                jmp(state, opcode);
+            } else {
+                state->pc += 2;
+            }
+            break;
+        case 0xf2: //JP
+            if(DEBUG) printf("JP $%02x%02x\n", opcode[2], opcode[1]);
+            if (state->cc.s == 0){
+                jmp(state, opcode);
+            } else {
+                state->pc += 2;
+            }
+            break;
+        case 0xfa: //JM
+            if(DEBUG) printf("JM $%02x%02x\n", opcode[2], opcode[1]);
+            if (state->cc.s){
+                jmp(state, opcode);
+            } else {
+                state->pc += 2;
+            }
+            break;
+        //CALL
+        case 0xcd:
+            call(state, opcode);
+            break;
+
+
 		//Arithmetic----------------------------
 		// Register Form---
 		// ADD reg (A <- A + reg)
@@ -542,7 +619,24 @@ void daa(state8080 *state) {
         setPFlag(state, res);
         state->a = res & 0xff;
     }
+}
 
+void jmp(state8080 *state, uint8_t *opcode) {
+    state->pc = (opcode[2] << 8) | (opcode[1]);
+}
+
+void call(state8080 *state, uint8_t *opcode) {
+    uint16_t ret = state->pc + 2;
+    state->memory[state->sp-1] = (ret >> 8) & 0xff;
+    state->memory[state->sp-2] = (ret >> 8) & 0xff;
+    state->sp -= 2;
+    jmp(state, opcode);
+}
+
+void ret(state8080 *state) {
+    state->pc = (state->memory[(state->sp + 1)] << 8)
+                | state->memory[state->sp];
+    state->sp += 2;
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
