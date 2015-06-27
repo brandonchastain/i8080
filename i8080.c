@@ -42,6 +42,7 @@ void subFromA(state8080*, uint8_t);
 void sbbFromA(state8080*, uint8_t);
 void addRPtoHL(state8080*, registerPair_kind);
 void decrRP(state8080*, registerPair_kind);
+void daa(state8080*);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -367,6 +368,13 @@ void emulateOp(state8080 *state) {
 			addRPtoHL(state, HL);
 			if(DEBUG) printf("DAD result: %02x%02x\n", state->h, state->l);
 			break;
+        //DAA
+        //Special instruction. See codebook for details.
+        case 0x27:
+            if(DEBUG) printf("DAA\t");
+            daa(state);
+            if(DEBUG) printf("DAA result: %02x\n", state->a);
+            break;
 
 		//Memory Form---
 		//ADD M (A <- mem[HL])
@@ -520,6 +528,21 @@ void addRPtoHL(state8080 *state, registerPair_kind rp) {
 	state->cc.cy = answer > 0xffff;
 	state->h = (answer >> 8) & 0xff;
 	state->l = answer & 0xff;
+}
+
+void daa(state8080 *state) {
+    if ((state->a & 0x0f) > 9 || state->cc.ac) {
+        state->a += 6;
+    }
+    if ((state->a >> 4) > 9 || state->cc.cy) {
+        uint16_t res = (uint16_t) state->a + 0x60;
+        setZFlag(state, res);
+        setSFlag(state, res);
+        setCYFlag(state, state->a, 0x60, ADD);
+        setPFlag(state, res);
+        state->a = res & 0xff;
+    }
+
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
