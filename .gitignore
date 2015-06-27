@@ -2,6 +2,8 @@ disassembler.exe
 disassembler
 i8080.exe
 i8080
+i8080.DSYM
 test.hex.bak
 *~
 invaders.rom
+
