@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "disassembler.h"
+
 #define PRINT_DEBUG 1
 #define DEBUG (PRINT_DEBUG && !isStepMode)
 
@@ -663,19 +665,15 @@ void setPFlag(state8080 *state, uint16_t answer) {
 }
 
 void printFlags(state8080 *state) {
-	printf("Z:%1d S:%1d P:%1d CY:%1d\n", state->cc.z, state->cc.s, state->cc.p, state->cc.cy);
+	printf("\tZ:%1d S:%1d P:%1d CY:%1d\n", state->cc.z, state->cc.s, state->cc.p, state->cc.cy);
 }
 
 void debugPrint(state8080 *state) {
     printf("Regs:\n");
-    printf("A: $%02x\n\
-            B: $%02x\tC: $%02x\n\
-            D: $%02x\tE: $%02x\n\
-            H: $%02x\tL: $%02x\n",
-            state->a,
-            state->b, state->c,
-            state->d, state->e,
-            state->h, state->l);
+    printf("\tA: $%02x\n", state->a);
+    printf("\tB: $%02x\tC: $%02x\n", state->b, state->c);
+    printf("\tD: $%02x\tE: $%02x\n", state->d, state->e);
+    printf("\tH: $%02x\tL: $%02x\n", state->h, state->l);
     printf("Flags:\n");
     printFlags(state);
 }
@@ -683,7 +681,13 @@ void debugPrint(state8080 *state) {
 int main(int argc, char **argv) {
 	state8080 state = {0};
 
-	FILE *f = fopen(argv[1], "rb");
+	if (argc > 2) {
+		if (strcmp(argv[1], "-d") == 0){
+			isStepMode = 1;
+		}
+	}
+
+	FILE *f = fopen(argv[argc - 1], "rb");
 	if (f == NULL) {
 		printf("Error: Couldn't open %s\n", argv[1]);
 		exit(1);
@@ -699,10 +703,15 @@ int main(int argc, char **argv) {
 	state.memory = buffer;
 
     while (state.pc < fsize) {
+		disassemble(state.memory, state.pc);
     	emulateOp(&state);
         if (DEBUG) printFlags(&state);
         if (isStepMode) {
+			debugPrint(&state);
+			printf("Press [Enter] to continue.\n");
             //wait for user to hit enter
+			fflush(stdin);
+			getchar();
         }
     }
 

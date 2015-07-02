@@ -1,7 +1,7 @@
 all: clean i8080
 
 i8080:
-	gcc i8080.c -g -o i8080
+	gcc i8080.c disassembler.c -g -o i8080
 
 disassembler:
 	gcc disassembler.c -g -o disassembler
