@@ -157,9 +157,47 @@ void emulateOp(state8080 *state) {
             break;
         //CALL
         case 0xcd:
+            if (DEBUG) printf("CALL $%02x%02x\n", opcode[2], opcode[1]);
             call(state, opcode);
             break;
-
+        //RET
+        case 0xc9:
+            if(DEBUG) printf("RET\n");
+            ret(state);
+            break;
+        //Rcond
+        case 0xc0:
+            if (DEBUG) printf("RNZ\n");
+            if (!state->cc.z) ret(state);
+            break;
+        case 0xc8:
+            if (DEBUG) printf("RZ\n");
+            if (state->cc.z) ret(state);
+            break;
+        case 0xd0:
+            if (DEBUG) printf("RNC\n");
+            if (!state->cc.cy) ret(state);
+            break;
+        case 0xd8:
+            if (DEBUG) printf("RC\n");
+            if (state->cc.cy) ret(state);
+            break;
+        case 0xe0:
+            if (DEBUG) printf("RPO\n");
+            if (!state->cc.p) ret(state);
+            break;
+        case 0xe8:
+            if (DEBUG) printf("RPE\n");
+            if (state->cc.p) ret(state);
+            break;
+        case 0xf0:
+            if (DEBUG) printf("RP\n");
+            if (!state->cc.s) ret(state);
+            break;
+        case 0xf8:
+            if (DEBUG) printf("RM\n");
+            if (state->cc.s) ret(state);
+            break;
 
 		//Arithmetic----------------------------
 		// Register Form---
@@ -633,6 +671,13 @@ void call(state8080 *state, uint8_t *opcode) {
     state->memory[state->sp-2] = (ret >> 8) & 0xff;
     state->sp -= 2;
     jmp(state, opcode);
+}
+
+void ret(state8080 *state) {
+    uint8_t retAddrLo = state->memory[state->sp];
+    uint8_t retAddrHi = state->memory[state->sp+1];
+    state->pc = (retAddrHi << 8) | retAddrLo;
+    state->pc += 2;
 }
 
 void ret(state8080 *state) {
