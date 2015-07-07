@@ -64,7 +64,7 @@ void setPFlag(state8080*, uint16_t);
 void printFlags(state8080*);
 void debugPrint(state8080*);
 
-//Memory utility
+//utility
 uint16_t getMemOffset(state8080*);
 
 void unimplementedInstr(state8080 *state) {
@@ -238,6 +238,41 @@ void emulateOp(state8080 *state) {
         case 0xe9:
             if (DEBUG) printf("PCHL\n");
             pchl(state);
+            break;
+
+        //Logical-------------------------------
+        //ANA r
+        case 0xa0:
+            if (DEBUG) printf("ANA B\n");
+            state->a = state->a & state->b;
+            break;
+        case 0xa1:
+            if (DEBUG) printf("ANA C\n");
+            state->a = state->a & state->c;
+            break;
+        case 0xa2:
+            if (DEBUG) printf("ANA D\n");
+            state->a = state->a & state->d;
+            break;
+        case 0xa3:
+            if (DEBUG) printf("ANA E\n");
+            state->a = state->a & state->e;
+            break;
+        case 0xa4:
+            if (DEBUG) printf("ANA H\n");
+            state->a = state->a & state->h;
+            break;
+        case 0xa5:
+            if (DEBUG) printf("ANA L\n");
+            state->a = state->a & state->l;
+            break;
+        case 0xa6:
+            if (DEBUG) printf("ANA M\n");
+            state->a = state->a & state->memory[getMemOffset(state)];
+            break;
+        case 0xa7:
+            if (DEBUG) printf("ANA A\n");
+            state->a = state->a & state->a;
             break;
 
 		//Arithmetic----------------------------
