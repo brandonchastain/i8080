@@ -55,6 +55,8 @@ void call(state8080*, uint8_t*);
 void ret(state8080*);
 void rst(state8080*, uint8_t);
 void pchl(state8080*);
+//logical
+void ana(state8080*, uint8_t);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -243,36 +245,14 @@ void emulateOp(state8080 *state) {
         //Logical-------------------------------
         //ANA r
         case 0xa0:
-            if (DEBUG) printf("ANA B\n");
-            state->a = state->a & state->b;
-            break;
         case 0xa1:
-            if (DEBUG) printf("ANA C\n");
-            state->a = state->a & state->c;
-            break;
         case 0xa2:
-            if (DEBUG) printf("ANA D\n");
-            state->a = state->a & state->d;
-            break;
         case 0xa3:
-            if (DEBUG) printf("ANA E\n");
-            state->a = state->a & state->e;
-            break;
         case 0xa4:
-            if (DEBUG) printf("ANA H\n");
-            state->a = state->a & state->h;
-            break;
         case 0xa5:
-            if (DEBUG) printf("ANA L\n");
-            state->a = state->a & state->l;
-            break;
         case 0xa6:
-            if (DEBUG) printf("ANA M\n");
-            state->a = state->a & state->memory[getMemOffset(state)];
-            break;
         case 0xa7:
-            if (DEBUG) printf("ANA A\n");
-            state->a = state->a & state->a;
+            ana(state, *opcode);
             break;
 
 		//Arithmetic----------------------------
@@ -765,6 +745,49 @@ void rst(state8080 *state, uint8_t num) {
 
 void pchl(state8080 *state) {
     state->pc = getMemOffset(state);
+}
+
+void ana(state8080 *state, uint8_t opcode) {
+    switch (opcode) {
+        case 0xa0:
+            if (DEBUG) printf("ANA B\t");
+            state->a = state->a & state->b;
+            break;
+        case 0xa1:
+            if (DEBUG) printf("ANA C\t");
+            state->a = state->a & state->c;
+            break;
+        case 0xa2:
+            if (DEBUG) printf("ANA D\t");
+            state->a = state->a & state->d;
+            break;
+        case 0xa3:
+            if (DEBUG) printf("ANA E\t");
+            state->a = state->a & state->e;
+            break;
+        case 0xa4:
+            if (DEBUG) printf("ANA H\t");
+            state->a = state->a & state->h;
+            break;
+        case 0xa5:
+            if (DEBUG) printf("ANA L\t");
+            state->a = state->a & state->l;
+            break;
+        case 0xa6:
+            if (DEBUG) printf("ANA M\t");
+            state->a = state->a & state->memory[getMemOffset(state)];
+            break;
+        case 0xa7:
+            if (DEBUG) printf("ANA A\t");
+            state->a = state->a & state->a;
+            break;
+    }
+    setZFlag(state, state->a);
+    setSFlag(state, state->a);
+    setCYFlag(state, 0, 0, ADD); //always 0
+    setPFlag(state, state->a);
+
+    if (DEBUG) printf("ana result: #$%02x\n", state->a);
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
