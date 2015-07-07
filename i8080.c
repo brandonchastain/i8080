@@ -41,6 +41,7 @@ void unimplementedInstr(state8080*);
 void emulateOp(state8080*);
 
 //operations
+//arithmetic
 void addToA(state8080*, uint8_t);
 void adcToA(state8080*, uint8_t);
 void subFromA(state8080*, uint8_t);
@@ -48,11 +49,12 @@ void sbbFromA(state8080*, uint8_t);
 void addRPtoHL(state8080*, registerPair_kind);
 void decrRP(state8080*, registerPair_kind);
 void daa(state8080*);
-
+//branching
 void jmp(state8080*, uint8_t*);
 void call(state8080*, uint8_t*);
 void ret(state8080*);
 void rst(state8080*, uint8_t);
+void pchl(state8080*);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -231,6 +233,11 @@ void emulateOp(state8080 *state) {
         case 0xff:
             if (DEBUG) printf("RST 7\n");
             rst(state, 7);
+            break;
+        //PCHL
+        case 0xe9:
+            if (DEBUG) printf("PCHL\n");
+            pchl(state);
             break;
 
 		//Arithmetic----------------------------
@@ -718,7 +725,11 @@ void rst(state8080 *state, uint8_t num) {
     state->memory[state->sp-1] = (state->pc >> 8) & 0xff;
     state->memory[state->sp-2] = (state->pc) & 0xff;
     state->sp -= 2;
-    state->pc = 8 * num;
+    state->pc = num << 3 & 0x0038; //multiply by 8.... probably a pre-optimization
+}
+
+void pchl(state8080 *state) {
+    state->pc = getMemOffset(state);
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
