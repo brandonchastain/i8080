@@ -52,6 +52,7 @@ void daa(state8080*);
 void jmp(state8080*, uint8_t*);
 void call(state8080*, uint8_t*);
 void ret(state8080*);
+void rst(state8080*, uint8_t);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -197,6 +198,39 @@ void emulateOp(state8080 *state) {
         case 0xf8:
             if (DEBUG) printf("RM\n");
             if (state->cc.s) ret(state);
+            break;
+        //RST n
+        case 0xc7:
+            if (DEBUG) printf("RST 0\n");
+            rst(state, 0);
+            break;
+        case 0xcf:
+            if (DEBUG) printf("RST 1\n");
+            rst(state, 1);
+            break;
+        case 0xd7:
+            if (DEBUG) printf("RST 2\n");
+            rst(state, 2);
+            break;
+        case 0xdf:
+            if (DEBUG) printf("RST 3\n");
+            rst(state, 3);
+            break;
+        case 0xe7:
+            if (DEBUG) printf("RST 4\n");
+            rst(state, 4);
+            break;
+        case 0xef:
+            if (DEBUG) printf("RST 5\n");
+            rst(state, 5);
+            break;
+        case 0xf7:
+            if (DEBUG) printf("RST 6\n");
+            rst(state, 6);
+            break;
+        case 0xff:
+            if (DEBUG) printf("RST 7\n");
+            rst(state, 7);
             break;
 
 		//Arithmetic----------------------------
@@ -680,10 +714,11 @@ void ret(state8080 *state) {
     state->pc += 2;
 }
 
-void ret(state8080 *state) {
-    state->pc = (state->memory[(state->sp + 1)] << 8)
-                | state->memory[state->sp];
-    state->sp += 2;
+void rst(state8080 *state, uint8_t num) {
+    state->memory[state->sp-1] = (state->pc >> 8) & 0xff;
+    state->memory[state->sp-2] = (state->pc) & 0xff;
+    state->sp -= 2;
+    state->pc = 8 * num;
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
