@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "disassembler.h"
 
@@ -57,6 +58,7 @@ void rst(state8080*, uint8_t);
 void pchl(state8080*);
 //logical
 void ana(state8080*, uint8_t);
+void ani(state8080*, uint8_t*);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -253,6 +255,10 @@ void emulateOp(state8080 *state) {
         case 0xa6:
         case 0xa7:
             ana(state, *opcode);
+            break;
+        case 0xe6:
+            ani(state, opcode);
+            state->pc += 1;
             break;
 
 		//Arithmetic----------------------------
@@ -784,10 +790,23 @@ void ana(state8080 *state, uint8_t opcode) {
     }
     setZFlag(state, state->a);
     setSFlag(state, state->a);
-    setCYFlag(state, 0, 0, ADD); //always 0
+    state->cc.cy = 0; //always clear CY
     setPFlag(state, state->a);
 
     if (DEBUG) printf("ana result: #$%02x\n", state->a);
+}
+
+void ani(state8080 *state, uint8_t *opcode) {
+    if (DEBUG) printf("ANI $%02x\t", opcode[1]);
+    uint8_t answer = state->a & opcode[1];
+    setZFlag(state, answer); 
+    setSFlag(state, answer);
+    setPFlag(state, answer);
+    state->cc.cy = 0;
+    state->cc.ac = 0;
+    
+    state->a = answer;
+    if (DEBUG) printf("ANI result: $%02x\n", state->a);
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
