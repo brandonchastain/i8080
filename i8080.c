@@ -34,7 +34,9 @@ typedef struct state8080 {
 
 typedef enum {ADD, SUB} carry_kind;
 typedef enum {BC, DE, HL} registerPair_kind;
+typedef enum {A, B, C, D, E, H, L, M} register_kind;
 
+static register_kind regs[8] = {A, B, C, D, E, H, L, M};
 static uint8_t isStepMode = 0;
 
 //emulating operations
@@ -59,6 +61,7 @@ void pchl(state8080*);
 //logical
 void ana(state8080*, uint8_t);
 void ani(state8080*, uint8_t*);
+void xra(state8080*, uint8_t);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -70,6 +73,9 @@ void debugPrint(state8080*);
 
 //utility
 uint16_t getMemOffset(state8080*);
+register_kind getRegFromNumber(uint8_t);
+uint8_t getRegVal(state8080*, register_kind);
+char* getRegLabel(register_kind);
 
 void unimplementedInstr(state8080 *state) {
 	state->pc -= 1;
@@ -259,6 +265,16 @@ void emulateOp(state8080 *state) {
         case 0xe6:
             ani(state, opcode);
             state->pc += 1;
+            break;
+        case 0xa8:
+        case 0xa9:
+        case 0xaa:
+        case 0xab:
+        case 0xac:
+        case 0xad:
+        case 0xae:
+        case 0xaf:
+            xra(state, *opcode);
             break;
 
 		//Arithmetic----------------------------
@@ -809,6 +825,24 @@ void ani(state8080 *state, uint8_t *opcode) {
     if (DEBUG) printf("ANI result: $%02x\n", state->a);
 }
 
+void xra (state8080 *state, uint8_t opcode) {
+    if (DEBUG) printf("XRA ");
+    int regno = opcode & 0x07;
+    register_kind reg = getRegFromNumber(regno);
+    const char *label = getRegLabel(reg);
+    if (DEBUG) printf("%s\t", label);
+    uint8_t regval = getRegVal(state, reg);
+    printf("%02x reg val\n", regval);
+    uint8_t answer = state->a ^ regval;
+    setZFlag(state, answer);
+    setSFlag(state, answer);
+    setPFlag(state, answer);
+    state->cc.cy = 0;
+    state->cc.ac = 0;
+    state->a = answer;
+    if (DEBUG) printf("ANI result: #$%02x\n", state->a);
+}
+
 void setZFlag(state8080 *state, uint16_t answer) {
 	state->cc.z = !(answer & 0xff);
 }
@@ -830,6 +864,52 @@ void setCYFlag(state8080 *state, uint8_t a, uint8_t b, carry_kind kind) {
 
 void setPFlag(state8080 *state, uint16_t answer) {
 	state->cc.p = ~(answer & 0x01);
+}
+
+register_kind getRegFromNumber(uint8_t regno) {
+    return regs[regno];
+}
+
+uint8_t getRegVal(state8080 *state, register_kind reg) {
+    switch (reg) {
+        case A:
+            return state->a;
+        case B:
+            return state->b;
+        case C:
+            return state->c;
+        case D:
+            return state->d;
+        case E:
+            return state->e;
+        case H:
+            return state->h;
+        case L:
+            return state->l;
+        case M:
+            return state->memory[getMemOffset(state)];
+    }
+}
+
+char* getRegLabel(register_kind reg) {
+    switch (reg) {
+        case A:
+            return "a";
+        case B:
+            return "b";
+        case C:
+            return "c";
+        case D:
+            return "d";
+        case E:
+            return "e";
+        case H:
+            return "h";
+        case L:
+            return "l";
+        case M:
+            return "mem";
+    }
 }
 
 void printFlags(state8080 *state) {
