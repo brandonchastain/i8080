@@ -36,7 +36,7 @@ typedef enum {ADD, SUB} carry_kind;
 typedef enum {BC, DE, HL} registerPair_kind;
 typedef enum {A, B, C, D, E, H, L, M} register_kind;
 
-static register_kind regs[8] = {A, B, C, D, E, H, L, M};
+static register_kind regs[7] = {B, C, D, E, H, L, A};
 static uint8_t isStepMode = 0;
 
 //emulating operations
@@ -828,6 +828,7 @@ void ani(state8080 *state, uint8_t *opcode) {
 void xra (state8080 *state, uint8_t opcode) {
     if (DEBUG) printf("XRA ");
     int regno = opcode & 0x07;
+    printf("regno: %d", regno);
     register_kind reg = getRegFromNumber(regno);
     const char *label = getRegLabel(reg);
     if (DEBUG) printf("%s\t", label);
@@ -840,7 +841,7 @@ void xra (state8080 *state, uint8_t opcode) {
     state->cc.cy = 0;
     state->cc.ac = 0;
     state->a = answer;
-    if (DEBUG) printf("ANI result: #$%02x\n", state->a);
+    if (DEBUG) printf("XRA result: #$%02x\n", state->a);
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
@@ -951,7 +952,7 @@ int main(int argc, char **argv) {
 	state.memory = buffer;
 
     while (state.pc < fsize) {
-		disassemble(state.memory, state.pc);
+		disassemble((char *)state.memory, state.pc);
     	emulateOp(&state);
         if (DEBUG) printFlags(&state);
         if (isStepMode) {
