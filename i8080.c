@@ -36,7 +36,7 @@ typedef enum {ADD, SUB} carry_kind;
 typedef enum {BC, DE, HL} registerPair_kind;
 typedef enum {A, B, C, D, E, H, L, M} register_kind;
 
-static register_kind regs[7] = {B, C, D, E, H, L, A};
+static register_kind regs[8] = {B, C, D, E, H, L, M, A};
 static uint8_t isStepMode = 0;
 
 //emulating operations
@@ -79,7 +79,8 @@ char* getRegLabel(register_kind);
 
 void unimplementedInstr(state8080 *state) {
 	state->pc -= 1;
-	printf("Error: Unimplemented instruction $%02x @ address $%04x\n", state->memory[state->pc], state->pc);
+	printf("Error: Unimplemented instruction $%02x @ address $%04x\n", 
+            state->memory[state->pc], state->pc);
 	exit(1);
 }
 
@@ -275,6 +276,24 @@ void emulateOp(state8080 *state) {
         case 0xae:
         case 0xaf:
             xra(state, *opcode);
+            break;
+        case 0xee:
+            xri(state, opcode);
+            state->pc += 1;
+            break;
+        case 0xb0:
+        case 0xb1:
+        case 0xb2:
+        case 0xb3:
+        case 0xb4:
+        case 0xb5:
+        case 0xb6:
+        case 0xb7:
+            ora(state, *opcode);
+            break;
+        case 0xf6:
+            ori(state, opcode);
+            state->pc += 1;
             break;
 
 		//Arithmetic----------------------------
@@ -762,7 +781,8 @@ void rst(state8080 *state, uint8_t num) {
     state->memory[state->sp-1] = (state->pc >> 8) & 0xff;
     state->memory[state->sp-2] = (state->pc) & 0xff;
     state->sp -= 2;
-    state->pc = num << 3 & 0x0038; //multiply by 8.... probably a pre-optimization
+    //multiply by 8.... probably a pre-optimization
+    state->pc = num << 3 & 0x0038;
 }
 
 void pchl(state8080 *state) {
@@ -826,14 +846,10 @@ void ani(state8080 *state, uint8_t *opcode) {
 }
 
 void xra (state8080 *state, uint8_t opcode) {
-    if (DEBUG) printf("XRA ");
+    if (DEBUG) printf("XRA\t");
     int regno = opcode & 0x07;
-    printf("regno: %d", regno);
     register_kind reg = getRegFromNumber(regno);
-    const char *label = getRegLabel(reg);
-    if (DEBUG) printf("%s\t", label);
     uint8_t regval = getRegVal(state, reg);
-    printf("%02x reg val\n", regval);
     uint8_t answer = state->a ^ regval;
     setZFlag(state, answer);
     setSFlag(state, answer);
@@ -842,6 +858,47 @@ void xra (state8080 *state, uint8_t opcode) {
     state->cc.ac = 0;
     state->a = answer;
     if (DEBUG) printf("XRA result: #$%02x\n", state->a);
+}
+
+void xri (state8080 *state, uint8_t *opcode) {
+    uint8_t imm = opcode[1];
+    if (DEBUG) printf("XRI #$%02x\t", imm);
+    uint8_t answer = state->a ^ imm;
+    setZFlag(state, answer);
+    setSFlag(state, answer);
+    setPFlag(state, answer);
+    state->cc.cy = 0;
+    state->cc.ac = 0;
+    state->a = answer;
+    if (DEBUG) printf("XRI result: #$%02x\n", state->a);
+}
+
+void ora (state8080 *state, uint8_t opcode) {
+    if (DEBUG) printf("ORA\t");
+    int regno = opcode & 0x07;
+    register_kind reg = getRegFromNumber(regno);
+    uint8_t regval = getRegVal(state, reg);
+    uint8_t answer = state->a | regval;
+    setZFlag(state, answer);
+    setSFlag(state, answer);
+    setPFlag(state, answer);
+    state->cc.cy = 0;
+    state->cc.ac = 0;
+    state->a = answer;
+    if (DEBUG) printf("ORA result: #$%02x\n", state->a);
+}
+
+void ori (state8080 *state, uint8_t *opcode) {
+    uint8_t imm = opcode[1];
+    if (DEBUG) printf("ORI #$%02x\t", imm);
+    uint8_t answer = state->a | imm;
+    setZFlag(state, answer);
+    setSFlag(state, answer);
+    setPFlag(state, answer);
+    state->cc.cy = 0;
+    state->cc.ac = 0;
+    state->a = answer;
+    if (DEBUG) printf("ORI result: #$%02x\n", state->a);
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
