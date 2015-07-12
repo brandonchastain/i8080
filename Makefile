@@ -9,3 +9,4 @@ disassembler:
 clean:
 	rm -f disassembler
 	rm -f i8080
+	rm -rf i8080.dSYM

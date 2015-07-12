@@ -62,6 +62,13 @@ void pchl(state8080*);
 void ana(state8080*, uint8_t);
 void ani(state8080*, uint8_t*);
 void xra(state8080*, uint8_t);
+void xri(state8080*, uint8_t*);
+void ora(state8080*, uint8_t);
+void ori(state8080*, uint8_t*);
+void cmp(state8080*, uint8_t);
+void cpi(state8080*, uint8_t*);
+void rlc(state8080*, uint8_t);
+void rrc(state8080*, uint8_t);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -294,6 +301,26 @@ void emulateOp(state8080 *state) {
         case 0xf6:
             ori(state, opcode);
             state->pc += 1;
+            break;
+        case 0xb8:
+        case 0xb9:
+        case 0xba:
+        case 0xbb:
+        case 0xbc:
+        case 0xbd:
+        case 0xbe:
+        case 0xbf:
+            cmp(state, *opcode);
+            break;
+        case 0xfe:
+            cpi(state, opcode);
+            state->pc += 1;
+            break;
+        case 0x07:
+            rlc(state, *opcode);
+            break;
+        case 0x0f:
+            rrc(state, *opcode);
             break;
 
 		//Arithmetic----------------------------
@@ -839,13 +866,11 @@ void ani(state8080 *state, uint8_t *opcode) {
     setSFlag(state, answer);
     setPFlag(state, answer);
     state->cc.cy = 0;
-    state->cc.ac = 0;
-    
     state->a = answer;
     if (DEBUG) printf("ANI result: $%02x\n", state->a);
 }
 
-void xra (state8080 *state, uint8_t opcode) {
+void xra(state8080 *state, uint8_t opcode) {
     if (DEBUG) printf("XRA\t");
     int regno = opcode & 0x07;
     register_kind reg = getRegFromNumber(regno);
@@ -855,12 +880,11 @@ void xra (state8080 *state, uint8_t opcode) {
     setSFlag(state, answer);
     setPFlag(state, answer);
     state->cc.cy = 0;
-    state->cc.ac = 0;
     state->a = answer;
     if (DEBUG) printf("XRA result: #$%02x\n", state->a);
 }
 
-void xri (state8080 *state, uint8_t *opcode) {
+void xri(state8080 *state, uint8_t *opcode) {
     uint8_t imm = opcode[1];
     if (DEBUG) printf("XRI #$%02x\t", imm);
     uint8_t answer = state->a ^ imm;
@@ -873,7 +897,7 @@ void xri (state8080 *state, uint8_t *opcode) {
     if (DEBUG) printf("XRI result: #$%02x\n", state->a);
 }
 
-void ora (state8080 *state, uint8_t opcode) {
+void ora(state8080 *state, uint8_t opcode) {
     if (DEBUG) printf("ORA\t");
     int regno = opcode & 0x07;
     register_kind reg = getRegFromNumber(regno);
@@ -888,7 +912,7 @@ void ora (state8080 *state, uint8_t opcode) {
     if (DEBUG) printf("ORA result: #$%02x\n", state->a);
 }
 
-void ori (state8080 *state, uint8_t *opcode) {
+void ori(state8080 *state, uint8_t *opcode) {
     uint8_t imm = opcode[1];
     if (DEBUG) printf("ORI #$%02x\t", imm);
     uint8_t answer = state->a | imm;
@@ -899,6 +923,48 @@ void ori (state8080 *state, uint8_t *opcode) {
     state->cc.ac = 0;
     state->a = answer;
     if (DEBUG) printf("ORI result: #$%02x\n", state->a);
+}
+
+void cmp(state8080 *state, uint8_t opcode) {
+    if (DEBUG) printf("CMP\t");
+    int regno = opcode & 0x07;
+    register_kind reg = getRegFromNumber(regno);
+    uint8_t regval = getRegVal(state, reg);
+    uint8_t answer = state->a - regval;
+    setZFlag(state, answer);
+    setSFlag(state, answer);
+    setPFlag(state, answer);
+    setCYFlag(state, state->a, regval, SUB);
+}
+
+void cpi(state8080 *state, uint8_t *opcode) {
+    uint8_t imm = opcode[1];
+    if (DEBUG) printf("CPI #$%02x\n", imm);
+    uint8_t answer = state->a - imm;
+    setZFlag(state, answer);
+    setSFlag(state, answer);
+    setPFlag(state, answer);
+    setCYFlag(state, state->a, imm, SUB);
+}
+
+void rlc(state8080 *state, uint8_t opcode) {
+    if (DEBUG) printf("RLC\t");
+    uint8_t prevHiBit = (state->a & 0x80) >> 7;
+    uint8_t answer = state->a << 1;
+    answer = answer | prevHiBit;
+    state->cc.cy = prevHiBit;
+    state->a = answer;
+    if (DEBUG) printf("RLC result: #$%02x\n", state->a);
+}
+
+void rrc(state8080 *state, uint8_t opcode) {
+    if (DEBUG) printf("RRC\t");
+    uint8_t prevLoBit = (state->a & 0x01);
+    uint8_t answer = state->a >> 1;
+    answer = (prevLoBit << 7) | answer;
+    state->cc.cy = prevLoBit;
+    state->a = answer;
+    if (DEBUG) printf("RRC result: #$%02x\n", state->a);
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
