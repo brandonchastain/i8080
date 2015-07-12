@@ -41,6 +41,7 @@ static uint8_t isStepMode = 0;
 
 //emulating operations
 void unimplementedInstr(state8080*);
+void invalidInstr(state8080*);
 void emulateOp(state8080*);
 
 //operations
@@ -69,6 +70,11 @@ void cmp(state8080*, uint8_t);
 void cpi(state8080*, uint8_t*);
 void rlc(state8080*, uint8_t);
 void rrc(state8080*, uint8_t);
+void ral(state8080*, uint8_t);
+void rar(state8080*, uint8_t);
+void cma(state8080*);
+void cmc(state8080*);
+void stc(state8080*);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -89,6 +95,12 @@ void unimplementedInstr(state8080 *state) {
 	printf("Error: Unimplemented instruction $%02x @ address $%04x\n", 
             state->memory[state->pc], state->pc);
 	exit(1);
+}
+
+void invalidInstr(state8080 *state) {
+    state->pc -= 1;
+    printf("Error: Invalid instruction $%02x @ address $%04x\n",
+            state->memory[state->pc], state->pc);
 }
 
 void emulateOp(state8080 *state) {
@@ -321,6 +333,24 @@ void emulateOp(state8080 *state) {
             break;
         case 0x0f:
             rrc(state, *opcode);
+            break;
+        case 0x17:
+            ral(state, *opcode);
+            break;
+        case 0x18:
+            invalidInstr(state);
+            break;
+        case 0x1f:
+            rar(state, *opcode);
+            break;
+        case 0x2f:
+            cma(state);
+            break;
+        case 0x3f:
+            cmc(state);
+            break;
+        case 0x37:
+            stc(state);
             break;
 
 		//Arithmetic----------------------------
@@ -965,6 +995,45 @@ void rrc(state8080 *state, uint8_t opcode) {
     state->cc.cy = prevLoBit;
     state->a = answer;
     if (DEBUG) printf("RRC result: #$%02x\n", state->a);
+}
+
+void ral(state8080 *state, uint8_t opcode) {
+    if (DEBUG) printf("RAL\t");
+    uint8_t prevHiBit = (state->a & 0x80) >> 7;
+    uint8_t answer = state->a << 1;
+    answer = answer | state->cc.cy;
+    state->cc.cy = prevHiBit;
+    state->a = answer;
+    if (DEBUG) printf("RAL result: #$%02x\n", state->a);
+}
+
+void rar(state8080 *state, uint8_t opcode) {
+    if (DEBUG) printf("RAR\t");
+    uint8_t prevLoBit = state->a & 0x01;
+    uint8_t answer = state->a >> 1;
+    answer = answer | state->cc.cy;
+    state->cc.cy = prevLoBit;
+    state->a = answer;
+    if (DEBUG) printf("RAR result: #$%02x\n", state->a);
+}
+
+void cma(state8080 *state) {
+    if (DEBUG) printf("CMA\t");
+    uint8_t answer = ~(state->a);
+    state->a = answer;
+    if (DEBUG) printf("CMA result: #$%02x\n", state->a);
+}
+
+void cmc(state8080 *state) {
+    if (DEBUG) printf("CMC\t");
+    state->cc.cy = ~state->cc.cy;
+    if (DEBUG) printf("CMC result: #$%02x\n", state->cc.cy);
+}
+
+void stc(state8080 *state) {
+    if (DEBUG) printf("STC\t");
+    state->cc.cy = 1;
+    if (DEBUG) printf("STC result: #$%02x\n", state->cc.cy);
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
