@@ -75,6 +75,8 @@ void rar(state8080*, uint8_t);
 void cma(state8080*);
 void cmc(state8080*);
 void stc(state8080*);
+//data transfer
+void mov(state8080*, uint8_t);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -88,6 +90,7 @@ void debugPrint(state8080*);
 uint16_t getMemOffset(state8080*);
 register_kind getRegFromNumber(uint8_t);
 uint8_t getRegVal(state8080*, register_kind);
+void setRegVal(state8080*, register_kind, uint8_t);
 char* getRegLabel(register_kind);
 
 void unimplementedInstr(state8080 *state) {
@@ -715,6 +718,76 @@ void emulateOp(state8080 *state) {
 			state->pc += 1;
 			break;
 
+        //Data Transfer Group
+        case 0x40:
+        case 0x41:
+        case 0x42:
+        case 0x43:
+        case 0x44:
+        case 0x45:
+        case 0x46:
+        case 0x47:
+        case 0x48:
+        case 0x49:
+        case 0x4a:
+        case 0x4b:
+        case 0x4c:
+        case 0x4d:
+        case 0x4e:
+        case 0x4f:
+        case 0x50:
+        case 0x51:
+        case 0x52:
+        case 0x53:
+        case 0x54:
+        case 0x55:
+        case 0x56:
+        case 0x57:
+        case 0x58:
+        case 0x59:
+        case 0x5a:
+        case 0x5b:
+        case 0x5c:
+        case 0x5d:
+        case 0x5e:
+        case 0x5f:
+        case 0x60:
+        case 0x61:
+        case 0x62:
+        case 0x63:
+        case 0x64:
+        case 0x65:
+        case 0x66:
+        case 0x67:
+        case 0x68:
+        case 0x69:
+        case 0x6a:
+        case 0x6b:
+        case 0x6c:
+        case 0x6d:
+        case 0x6e:
+        case 0x6f:
+        case 0x70:
+        case 0x71:
+        case 0x72:
+        case 0x73:
+        case 0x74:
+        case 0x75:
+        case 0x77:
+        case 0x78:
+        case 0x79:
+        case 0x7a:
+        case 0x7b:
+        case 0x7c:
+        case 0x7d:
+        case 0x7e:
+        case 0x7f:
+            mov(state, *opcode);
+            break;
+        //case 0x76:
+            //TODO: halt instruction.
+            break;
+
 		default: unimplementedInstr(state); break;
 	}
 }
@@ -1036,6 +1109,17 @@ void stc(state8080 *state) {
     if (DEBUG) printf("STC result: #$%02x\n", state->cc.cy);
 }
 
+void mov(state8080 *state, uint8_t opcode) {
+    if (DEBUG) printf("MOV\t");
+    int dregno = opcode & (0x07 << 3);
+    int sregno = opcode & 0x07;
+    register_kind dreg = getRegFromNumber(dregno);
+    register_kind sreg = getRegFromNumber(sregno);
+    if (DEBUG) printf("%s to %s", getRegLabel(sreg), getRegLabel(dreg));
+    uint8_t val = getRegVal(state, sreg);
+    setRegVal(state, dreg, val);
+}
+
 void setZFlag(state8080 *state, uint16_t answer) {
 	state->cc.z = !(answer & 0xff);
 }
@@ -1081,6 +1165,35 @@ uint8_t getRegVal(state8080 *state, register_kind reg) {
             return state->l;
         case M:
             return state->memory[getMemOffset(state)];
+    }
+}
+
+void setRegVal(state8080 *state, register_kind reg, uint8_t val) {
+    switch (reg) {
+        case A:
+            state->a = val;
+            break;
+        case B:
+            state->b = val;
+            break;
+        case C:
+            state->c = val;
+            break;
+        case D:
+            state->d = val;
+            break;
+        case E:
+            state->e = val;
+            break;
+        case H:
+            state->h = val;
+            break;
+        case L:
+            state->l = val;
+            break;
+        case M:
+            state->memory[getMemOffset(state)] = val;
+            break;
     }
 }
 
