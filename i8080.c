@@ -28,20 +28,22 @@ typedef struct state8080 {
 	uint16_t sp;
 	uint16_t pc;
 	uint8_t *memory;
+	uint16_t memSize;
 	struct conditionCodes cc;
 	uint8_t int_enable;
 } state8080;
 
 typedef enum {ADD, SUB} carry_kind;
 typedef enum {BC, DE, HL} registerPair_kind;
-typedef enum {A, B, C, D, E, H, L, M} register_kind;
+typedef enum {A, B, C, D, E, H, L, M, Q} register_kind; //Q means invalid
 
-static register_kind regs[8] = {B, C, D, E, H, L, M, A};
+static register_kind regs[9] = {B, C, D, E, H, L, M, Q, A};
 static uint8_t isStepMode = 0;
+static state8080 *state = NULL;
 
 //emulating operations
 void unimplementedInstr(state8080*);
-void invalidInstr(state8080*);
+void invalidInstr();
 void emulateOp(state8080*);
 
 //operations
@@ -77,14 +79,18 @@ void cmc(state8080*);
 void stc(state8080*);
 //data transfer
 void mov(state8080*, uint8_t);
+void mvi(uint8_t*);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
 void setSFlag(state8080*, uint16_t);
 void setCYFlag(state8080*, uint8_t, uint8_t, carry_kind);
 void setPFlag(state8080*, uint16_t);
+
+//printing
 void printFlags(state8080*);
 void debugPrint(state8080*);
+void printMem();
 
 //utility
 uint16_t getMemOffset(state8080*);
@@ -100,10 +106,11 @@ void unimplementedInstr(state8080 *state) {
 	exit(1);
 }
 
-void invalidInstr(state8080 *state) {
+void invalidInstr() {
     state->pc -= 1;
     printf("Error: Invalid instruction $%02x @ address $%04x\n",
             state->memory[state->pc], state->pc);
+    exit(1);
 }
 
 void emulateOp(state8080 *state) {
@@ -341,7 +348,7 @@ void emulateOp(state8080 *state) {
             ral(state, *opcode);
             break;
         case 0x18:
-            invalidInstr(state);
+            invalidInstr();
             break;
         case 0x1f:
             rar(state, *opcode);
@@ -784,6 +791,17 @@ void emulateOp(state8080 *state) {
         case 0x7f:
             mov(state, *opcode);
             break;
+		case 0x06:
+		case 0x0e:
+		case 0x16:
+		case 0x1e:
+		case 0x26:
+		case 0x2e:
+		case 0x36:
+		case 0x3e:
+			mvi(opcode);
+			state->pc += 1;
+			break;
         //case 0x76:
             //TODO: halt instruction.
             break;
@@ -1111,13 +1129,22 @@ void stc(state8080 *state) {
 
 void mov(state8080 *state, uint8_t opcode) {
     if (DEBUG) printf("MOV\t");
-    int dregno = opcode & (0x07 << 3);
+    int dregno = (opcode >> 3) & 0x07;
     int sregno = opcode & 0x07;
     register_kind dreg = getRegFromNumber(dregno);
     register_kind sreg = getRegFromNumber(sregno);
-    if (DEBUG) printf("%s to %s", getRegLabel(sreg), getRegLabel(dreg));
+    if (DEBUG) printf("%s to %s\n", getRegLabel(sreg), getRegLabel(dreg));
     uint8_t val = getRegVal(state, sreg);
     setRegVal(state, dreg, val);
+}
+
+void mvi(uint8_t *opcode) {
+	if (DEBUG) printf("MVI\t");
+	uint8_t dregno = (*opcode >> 3) & 0x07;
+	register_kind dreg = getRegFromNumber(dregno);
+	uint8_t val = opcode[1];
+	if (DEBUG) printf("#$%02x to %s\n", val, getRegLabel(dreg));
+	setRegVal(state, dreg, val);
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
@@ -1144,7 +1171,11 @@ void setPFlag(state8080 *state, uint16_t answer) {
 }
 
 register_kind getRegFromNumber(uint8_t regno) {
-    return regs[regno];
+    register_kind reg = regs[regno];
+    if (reg == Q) {
+        invalidInstr();
+    }
+    return reg;
 }
 
 uint8_t getRegVal(state8080 *state, register_kind reg) {
@@ -1163,6 +1194,9 @@ uint8_t getRegVal(state8080 *state, register_kind reg) {
             return state->h;
         case L:
             return state->l;
+        case Q:
+            invalidInstr();
+            return -1;
         case M:
             return state->memory[getMemOffset(state)];
     }
@@ -1194,6 +1228,9 @@ void setRegVal(state8080 *state, register_kind reg, uint8_t val) {
         case M:
             state->memory[getMemOffset(state)] = val;
             break;
+        default:
+            invalidInstr();
+            break;
     }
 }
 
@@ -1215,11 +1252,23 @@ char* getRegLabel(register_kind reg) {
             return "l";
         case M:
             return "mem";
+        default:
+            invalidInstr();
+            return "Q";
     }
 }
 
 void printFlags(state8080 *state) {
 	printf("\tZ:%1d S:%1d P:%1d CY:%1d\n", state->cc.z, state->cc.s, state->cc.p, state->cc.cy);
+}
+
+void printMem() {
+	size_t size = state->memSize;
+	for (int i = 0; i < size; i++) {
+		if (state->memory[i] != 0x00) {
+			printf("($%02x): #$%02x\n", i, state->memory[i]);
+		}
+	}
 }
 
 void debugPrint(state8080 *state) {
@@ -1230,10 +1279,13 @@ void debugPrint(state8080 *state) {
     printf("\tH: $%02x\tL: $%02x\n", state->h, state->l);
     printf("Flags:\n");
     printFlags(state);
+	printf("Mem:\n");
+	printMem();
 }
 
 int main(int argc, char **argv) {
-	state8080 state = {0};
+	state8080 state1 = {0};
+    state = &state1;
 
 	if (argc > 2) {
 		if (strcmp(argv[1], "-d") == 0){
@@ -1249,19 +1301,21 @@ int main(int argc, char **argv) {
 
 	fseek(f, 0L, SEEK_END);
 	int fsize = ftell(f);
+	//INFO: instr size limited to 1024 bytes right now.
+	state->memSize = 1024;
 	fseek(f, 0L, SEEK_SET);
-	uint8_t *buffer = (uint8_t *)malloc(fsize);
+	uint8_t *buffer = (uint8_t *)malloc(state->memSize);
 	fread(buffer, fsize, 1, f);
 	fclose(f);
 
-	state.memory = buffer;
+	state->memory = buffer;
 
-    while (state.pc < fsize) {
-		disassemble((char *)state.memory, state.pc);
-    	emulateOp(&state);
-        if (DEBUG) printFlags(&state);
+    while (state->pc < fsize) {
+		disassemble((char *)state->memory, state->pc);
+    	emulateOp(state);
+        if (DEBUG) printFlags(state);
         if (isStepMode) {
-			debugPrint(&state);
+			debugPrint(state);
 			printf("Press [Enter] to continue.\n");
             //wait for user to hit enter
 			fflush(stdin);
