@@ -34,10 +34,11 @@ typedef struct state8080 {
 } state8080;
 
 typedef enum {ADD, SUB} carry_kind;
-typedef enum {BC, DE, HL} registerPair_kind;
+typedef enum {BC, DE, HL, SP} registerPair_kind;
 typedef enum {A, B, C, D, E, H, L, M, Q} register_kind; //Q means invalid
 
 static register_kind regs[9] = {B, C, D, E, H, L, M, Q, A};
+static registerPair_kind rps[4] = {BC, DE, HL, SP};
 static uint8_t isStepMode = 0;
 static state8080 *state = NULL;
 
@@ -80,6 +81,7 @@ void stc(state8080*);
 //data transfer
 void mov(state8080*, uint8_t);
 void mvi(uint8_t*);
+void lxi(uint8_t*);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -95,9 +97,13 @@ void printMem();
 //utility
 uint16_t getMemOffset(state8080*);
 register_kind getRegFromNumber(uint8_t);
+registerPair_kind getRPFromNumber(uint8_t);
 uint8_t getRegVal(state8080*, register_kind);
 void setRegVal(state8080*, register_kind, uint8_t);
 char* getRegLabel(register_kind);
+uint16_t getRPVal(registerPair_kind);
+void setRPVal(registerPair_kind, uint16_t);
+char* getRPLabel(registerPair_kind);
 
 void unimplementedInstr(state8080 *state) {
 	state->pc -= 1;
@@ -120,12 +126,6 @@ void emulateOp(state8080 *state) {
 	state->pc += 1;
 	switch (*opcode) {
 		case 0x00: break; //NOP
-		case 0x01: //LXI B,word
-			if(DEBUG) printf("LXI B\n");
-			state->b = opcode[2];
-			state->c = opcode[1];
-			state->pc += 2;
-			break;
         //Branching----------------------------
         //JMP addr
 		case 0xc3: //JMP
@@ -802,6 +802,13 @@ void emulateOp(state8080 *state) {
 			mvi(opcode);
 			state->pc += 1;
 			break;
+		case 0x01:
+		case 0x11:
+		case 0x21:
+		case 0x31:
+			lxi(opcode);
+			state->pc += 2;
+			break;
         //case 0x76:
             //TODO: halt instruction.
             break;
@@ -858,10 +865,19 @@ void sbbFromA(state8080 *state, uint8_t value){
 
 void decrRP(state8080 *state, registerPair_kind rp){
 	uint8_t *rh, *rl;
-	switch(rp) {
-		case BC: rh = &state->b; rl = &state->c; break;
-		case DE: rh = &state->d; rl = &state->e; break;
-		case HL: rh = &state->h; rl = &state->l; break;
+
+	if (rp == SP) {
+		uint8_t hi = (uint8_t)((state->sp & 0xff00) >> 8);
+		uint8_t lo = (uint8_t)(state->sp & 0x00ff);	
+		rh = &hi;
+		rl = &lo;
+	} else {
+		switch(rp) {
+			case BC: rh = &state->b; rl = &state->c; break;
+			case DE: rh = &state->d; rl = &state->e; break;
+			case HL: rh = &state->h; rl = &state->l; break;
+			case SP: break;
+		}
 	}
 
 	uint16_t temp = (uint16_t)*rl;
@@ -1147,6 +1163,14 @@ void mvi(uint8_t *opcode) {
 	setRegVal(state, dreg, val);
 }
 
+void lxi(uint8_t *opcode) {
+	if (DEBUG) printf("LXI\t");
+	uint8_t regPairNo = (*opcode >> 4) & 0x03;
+	uint16_t val = (opcode[2] << 8) | opcode[1];
+	registerPair_kind rp = getRPFromNumber(regPairNo);
+
+}
+
 void setZFlag(state8080 *state, uint16_t answer) {
 	state->cc.z = !(answer & 0xff);
 }
@@ -1178,6 +1202,15 @@ register_kind getRegFromNumber(uint8_t regno) {
     return reg;
 }
 
+registerPair_kind getRPFromNumber(uint8_t regPairNo) {
+	if (regPairNo < 0 || regPairNo > 4) {
+		invalidInstr();
+	}
+	registerPair_kind rp = rps[regPairNo];
+	return rp;
+}
+
+
 uint8_t getRegVal(state8080 *state, register_kind reg) {
     switch (reg) {
         case A:
@@ -1200,6 +1233,18 @@ uint8_t getRegVal(state8080 *state, register_kind reg) {
         case M:
             return state->memory[getMemOffset(state)];
     }
+}
+
+uint16_t getRPVal(registerPair_kind rp) {
+	uint8_t hi;
+	uint8_t lo;
+	switch(rp) {
+		case BC: hi = state->b; lo = state->c; break;
+		case DE: hi = state->d; lo = state->e; break;
+		case HL: hi = state->h; lo = state->l; break;
+		case SP: hi = (state->sp & 0xff00) >> 8; lo = state->sp & 0x00ff; break;
+	}
+	return (uint16_t)((hi << 8) | lo);
 }
 
 void setRegVal(state8080 *state, register_kind reg, uint8_t val) {
@@ -1232,6 +1277,30 @@ void setRegVal(state8080 *state, register_kind reg, uint8_t val) {
             invalidInstr();
             break;
     }
+}
+
+void setRPVal(registerPair_kind rp, uint16_t val) {
+	if (rp == SP) {
+		state->sp = val;
+	} else {
+		uint8_t hi = (uint8_t)(val >> 8);
+		uint8_t lo = (uint8_t)(val & 0x00ff);
+		switch (rp) {
+			case BC:
+				state->b = hi;
+				state->c = lo;
+				break;
+			case DE:
+				state->d = hi;
+				state->e = lo;
+				break;
+			case HL:
+				state->h = hi;
+				state->l = lo;
+				break;
+			case SP: break;
+		}
+	}
 }
 
 char* getRegLabel(register_kind reg) {
