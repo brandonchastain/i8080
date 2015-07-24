@@ -84,6 +84,11 @@ void mvi(uint8_t*);
 void lxi(uint8_t*);
 void lda(uint8_t*);
 void sta(uint8_t*);
+void lhld(uint8_t*);
+void shld(uint8_t*);
+void ldax(uint8_t*);
+void stax(uint8_t*);
+void xchg(uint8_t*);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -819,6 +824,25 @@ void emulateOp(state8080 *state) {
 			sta(opcode);
 			state->pc += 2;
 			break;
+		case 0x2a:
+			lhld(opcode);
+			state->pc += 2;
+			break;
+		case 0x22:
+			shld(opcode);
+			state->pc += 2;
+			break;
+		case 0x0a:
+		case 0x1a:
+			ldax(opcode);
+			break;
+		case 0x02:
+		case 0x12:
+			stax(opcode);
+			break;
+		case 0xeb:
+			xchg(opcode);
+			break;
         //case 0x76:
             //TODO: halt instruction.
             break;
@@ -1194,6 +1218,75 @@ void sta(uint8_t *opcode) {
 	uint16_t addr = (opcode[2] << 8) | opcode[1];
 	if (DEBUG) printf("to ($%04x)\n", addr);
 	state->memory[addr] = state->a;
+}
+
+void lhld(uint8_t *opcode) {
+	if (DEBUG) printf("LHLD\t");
+	uint16_t addr = (opcode[2] << 8) | opcode[1];
+	if (DEBUG) printf("($%04x)\n", addr);
+	state->h = state->memory[addr + 1];
+	state->l = state->memory[addr];
+}
+
+void shld(uint8_t *opcode) {
+	if (DEBUG) printf("SHLD\t");
+	uint16_t addr = (opcode[2] << 8) | opcode[1];
+	if (DEBUG) printf("($%04x)\n", addr);
+	state->memory[addr + 1] = state->h;
+	state->memory[addr] = state->l;
+}
+
+void ldax(uint8_t *opcode) {
+	if (DEBUG) printf("LDAX\t");
+	uint8_t regno = (*opcode) >> 4 & 0x03;
+	registerPair_kind rp = getRPFromNumber(regno);
+	uint16_t addr;
+	switch (rp) {
+		case BC:
+			addr = (state->b << 8) | state->c;
+			break;
+		case DE:
+			addr = (state->d << 8) | state->e;
+			break;
+		default:
+			invalidInstr();
+			break;
+	}
+
+	state->a = state->memory[addr];
+	if (DEBUG) printf("result: #$%02x\n", state->a);
+}
+
+void stax(uint8_t *opcode) {
+	if (DEBUG) printf("STAX\t");
+	uint8_t regno = (*opcode) >> 4 & 0x03;
+	registerPair_kind rp = getRPFromNumber(regno);
+	uint16_t addr;
+	switch (rp) {
+		case BC:
+			addr = (state->b << 8) | state->c;
+			break;
+		case DE:
+			addr = (state->d << 8) | state->e;
+			break;
+		default:
+			invalidInstr();
+			break;
+	}
+
+	state->memory[addr] = state->a;
+	if (DEBUG) printf("result: #$%02x\n", state->memory[addr]);
+}
+
+void xchg(uint8_t *opcode) {
+	if (DEBUG) printf("XCHG\n");
+	uint8_t temp = state->h;
+	state->h = state->d;
+	state->d = temp;
+
+	temp = state->l;
+	state->l = state->e;
+	state->e = temp;
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
