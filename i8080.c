@@ -35,9 +35,9 @@ typedef struct state8080 {
 
 typedef enum {ADD, SUB} carry_kind;
 typedef enum {BC, DE, HL, SP} registerPair_kind;
-typedef enum {A, B, C, D, E, H, L, M, Q} register_kind; //Q means invalid
+typedef enum {A, B, C, D, E, H, L, M} register_kind;
 
-static register_kind regs[9] = {B, C, D, E, H, L, M, Q, A};
+static register_kind regs[9] = {B, C, D, E, H, L, M, A};
 static registerPair_kind rps[4] = {BC, DE, HL, SP};
 static uint8_t isStepMode = 0;
 static state8080 *state = NULL;
@@ -1181,6 +1181,8 @@ void mov(state8080 *state, uint8_t opcode) {
     if (DEBUG) printf("MOV\t");
     int dregno = (opcode >> 3) & 0x07;
     int sregno = opcode & 0x07;
+	printf("dreg: %d", dregno);
+	printf("sreg: %d\n", sregno);
     register_kind dreg = getRegFromNumber(dregno);
     register_kind sreg = getRegFromNumber(sregno);
     if (DEBUG) printf("%s to %s\n", getRegLabel(sreg), getRegLabel(dreg));
@@ -1314,9 +1316,6 @@ void setPFlag(state8080 *state, uint16_t answer) {
 
 register_kind getRegFromNumber(uint8_t regno) {
     register_kind reg = regs[regno];
-    if (reg == Q) {
-        invalidInstr();
-    }
     return reg;
 }
 
@@ -1345,9 +1344,6 @@ uint8_t getRegVal(state8080 *state, register_kind reg) {
             return state->h;
         case L:
             return state->l;
-        case Q:
-            invalidInstr();
-            return -1;
         case M:
             return state->memory[getMemOffset(state)];
     }
@@ -1441,7 +1437,7 @@ char* getRegLabel(register_kind reg) {
             return "mem";
         default:
             invalidInstr();
-            return "Q";
+			return "-1";
     }
 }
 
