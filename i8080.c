@@ -82,6 +82,8 @@ void stc(state8080*);
 void mov(state8080*, uint8_t);
 void mvi(uint8_t*);
 void lxi(uint8_t*);
+void lda(uint8_t*);
+void sta(uint8_t*);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -809,6 +811,14 @@ void emulateOp(state8080 *state) {
 			lxi(opcode);
 			state->pc += 2;
 			break;
+		case 0x3a:
+			lda(opcode);
+			state->pc += 2;
+			break;
+		case 0x32:
+			sta(opcode);
+			state->pc += 2;
+			break;
         //case 0x76:
             //TODO: halt instruction.
             break;
@@ -1168,7 +1178,22 @@ void lxi(uint8_t *opcode) {
 	uint8_t regPairNo = (*opcode >> 4) & 0x03;
 	uint16_t val = (opcode[2] << 8) | opcode[1];
 	registerPair_kind rp = getRPFromNumber(regPairNo);
+	setRPVal(rp, val);
+	if (DEBUG) printf("result: #$%04x\n", getRPVal(rp));
+}
 
+void lda(uint8_t *opcode) {
+	if (DEBUG) printf("LDA\t");
+	uint16_t addr = (opcode[2] << 8) | opcode[1];
+	state->a = state->memory[addr];
+	if (DEBUG) printf("result: #$%02x\n", state->a);
+}
+
+void sta(uint8_t *opcode) {
+	if (DEBUG) printf("STA\t");
+	uint16_t addr = (opcode[2] << 8) | opcode[1];
+	if (DEBUG) printf("to ($%04x)\n", addr);
+	state->memory[addr] = state->a;
 }
 
 void setZFlag(state8080 *state, uint16_t answer) {
@@ -1332,17 +1357,13 @@ void printFlags(state8080 *state) {
 }
 
 void printMem() {
-	size_t size = state->memSize;
-	for (int i = 0; i < size; i++) {
-		if (state->memory[i] != 0x00) {
-			printf("($%02x): #$%02x\n", i, state->memory[i]);
-		}
-	}
+	printf("(HL): #$%02x\n", state->memory[(state->h << 8) | state->l]);
+	printf("(SP): #$%02x\n", state->memory[state->sp]);
 }
 
 void debugPrint(state8080 *state) {
     printf("Regs:\n");
-    printf("\tA: $%02x\n", state->a);
+    printf("\tA: $%02x\tSP:$%04x\n", state->a, state->sp);
     printf("\tB: $%02x\tC: $%02x\n", state->b, state->c);
     printf("\tD: $%02x\tE: $%02x\n", state->d, state->e);
     printf("\tH: $%02x\tL: $%02x\n", state->h, state->l);
@@ -1350,6 +1371,7 @@ void debugPrint(state8080 *state) {
     printFlags(state);
 	printf("Mem:\n");
 	printMem();
+	printf("\n");
 }
 
 int main(int argc, char **argv) {
@@ -1373,7 +1395,7 @@ int main(int argc, char **argv) {
 	//INFO: instr size limited to 1024 bytes right now.
 	state->memSize = 1024;
 	fseek(f, 0L, SEEK_SET);
-	uint8_t *buffer = (uint8_t *)malloc(state->memSize);
+	uint8_t *buffer = (uint8_t *)calloc(1, state->memSize);
 	fread(buffer, fsize, 1, f);
 	fclose(f);
 
