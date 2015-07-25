@@ -89,6 +89,8 @@ void shld(uint8_t*);
 void ldax(uint8_t*);
 void stax(uint8_t*);
 void xchg(uint8_t*);
+//stack
+void push(uint8_t);
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -116,13 +118,15 @@ void unimplementedInstr(state8080 *state) {
 	state->pc -= 1;
 	printf("Error: Unimplemented instruction $%02x @ address $%04x\n", 
             state->memory[state->pc], state->pc);
-	exit(1);
+    free(state->memory);
+    exit(1);
 }
 
 void invalidInstr() {
     state->pc -= 1;
     printf("Error: Invalid instruction $%02x @ address $%04x\n",
             state->memory[state->pc], state->pc);
+    free(state->memory);
     exit(1);
 }
 
@@ -843,6 +847,12 @@ void emulateOp(state8080 *state) {
 		case 0xeb:
 			xchg(opcode);
 			break;
+        case 0xc5:
+        case 0xd5:
+        case 0xe5:
+        case 0xf5:
+            push(*opcode);
+            break;
         //case 0x76:
             //TODO: halt instruction.
             break;
@@ -1291,6 +1301,17 @@ void xchg(uint8_t *opcode) {
 	state->e = temp;
 }
 
+void push(uint8_t opcode) {
+    if (DEBUG) printf("PUSH\t");
+    uint8_t rpNo = (opcode >> 4) & 0x03;
+    registerPair_kind rp = getRPFromNumber(rpNo);
+    if (DEBUG) printf("%s\n", getRPLabel(rpNo));
+    uint16_t rpVal = getRPVal(rp);
+    state->memory[state->sp - 1] = (uint8_t)(rpVal >> 8);
+    state->memory[state->sp - 2] = (uint8_t)rpVal;
+    state->sp -= 2;
+}
+
 void setZFlag(state8080 *state, uint16_t answer) {
 	state->cc.z = !(answer & 0xff);
 }
@@ -1441,6 +1462,18 @@ char* getRegLabel(register_kind reg) {
     }
 }
 
+char* getRPLabel(registerPair_kind rp) {
+    switch (rp) {
+        case BC: return "BC";
+        case DE: return "DE";
+        case HL: return "HL";
+        case SP: return "SP";
+        default:
+            invalidInstr();
+            return "-1";
+    }
+}
+
 void printFlags(state8080 *state) {
 	printf("\tZ:%1d S:%1d P:%1d CY:%1d\n", state->cc.z, state->cc.s, state->cc.p, state->cc.cy);
 }
@@ -1482,7 +1515,7 @@ int main(int argc, char **argv) {
 	fseek(f, 0L, SEEK_END);
 	int fsize = ftell(f);
 	//INFO: instr size limited to 1024 bytes right now.
-	state->memSize = 1024;
+	state->memSize = fsize + 1024;
 	fseek(f, 0L, SEEK_SET);
 	uint8_t *buffer = (uint8_t *)calloc(1, state->memSize);
 	fread(buffer, fsize, 1, f);
