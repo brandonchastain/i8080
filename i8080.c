@@ -781,8 +781,7 @@ int main(int argc, char **argv) {
 
 	fseek(f, 0L, SEEK_END);
 	int fsize = ftell(f);
-	//INFO: instr size limited to 1024 bytes right now.
-	state->memSize = fsize + 1024;
+	state->memSize = fsize + 1024; //extra space for data storage
 	fseek(f, 0L, SEEK_SET);
 	uint8_t *buffer = (uint8_t *)calloc(1, state->memSize);
 	fread(buffer, fsize, 1, f);
