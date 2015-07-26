@@ -2,63 +2,21 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-
 #include "disassembler.h"
 #include "globals.h"
 #include "util.h"
 
-register_kind regs[9] = {B, C, D, E, H, L, M, A};
+#include "arithmetic.h"
+#include "branching.h"
+#include "logical.h"
+#include "dataTransfer.h"
+#include "stack.h"
+
+register_kind regs[8] = {B, C, D, E, H, L, M, A};
 registerPair_kind rps[4] = {BC, DE, HL, SP};
 uint8_t isStepMode = 0;
 
 void emulateOp(state8080*);
-
-//operations
-//arithmetic
-void addToA(state8080*, uint8_t);
-void adcToA(state8080*, uint8_t);
-void subFromA(state8080*, uint8_t);
-void sbbFromA(state8080*, uint8_t);
-void addRPtoHL(state8080*, registerPair_kind);
-void decrRP(state8080*, registerPair_kind);
-void daa(state8080*);
-//branching
-void jmp(state8080*, uint8_t*);
-void call(state8080*, uint8_t*);
-void ret(state8080*);
-void rst(state8080*, uint8_t);
-void pchl(state8080*);
-//logical
-void ana(state8080*, uint8_t);
-void ani(state8080*, uint8_t*);
-void xra(state8080*, uint8_t);
-void xri(state8080*, uint8_t*);
-void ora(state8080*, uint8_t);
-void ori(state8080*, uint8_t*);
-void cmp(state8080*, uint8_t);
-void cpi(state8080*, uint8_t*);
-void rlc(state8080*, uint8_t);
-void rrc(state8080*, uint8_t);
-void ral(state8080*, uint8_t);
-void rar(state8080*, uint8_t);
-void cma(state8080*);
-void cmc(state8080*);
-void stc(state8080*);
-//data transfer
-void mov(state8080*, uint8_t);
-void mvi(state8080*, uint8_t*);
-void lxi(state8080*, uint8_t*);
-void lda(state8080*, uint8_t*);
-void sta(state8080*, uint8_t*);
-void lhld(state8080*, uint8_t*);
-void shld(state8080*, uint8_t*);
-void ldax(state8080*, uint8_t*);
-void stax(state8080*, uint8_t*);
-void xchg(state8080*, uint8_t*);
-//stack
-void push(state8080*, uint8_t);
-void pop(state8080*, uint8_t);
-void sphl(state8080*);
 
 void emulateOp(state8080 *state) {
 	uint16_t answer;
@@ -289,7 +247,7 @@ void emulateOp(state8080 *state) {
             ral(state, *opcode);
             break;
         case 0x18:
-            invalidInstr();
+            invalidInstr(state);
             break;
         case 0x1f:
             rar(state, *opcode);
@@ -740,57 +698,57 @@ void emulateOp(state8080 *state) {
 		case 0x2e:
 		case 0x36:
 		case 0x3e:
-			mvi(opcode);
+			mvi(state, opcode);
 			state->pc += 1;
 			break;
 		case 0x01:
 		case 0x11:
 		case 0x21:
 		case 0x31:
-			lxi(opcode);
+			lxi(state, opcode);
 			state->pc += 2;
 			break;
 		case 0x3a:
-			lda(opcode);
+			lda(state, opcode);
 			state->pc += 2;
 			break;
 		case 0x32:
-			sta(opcode);
+			sta(state, opcode);
 			state->pc += 2;
 			break;
 		case 0x2a:
-			lhld(opcode);
+			lhld(state, opcode);
 			state->pc += 2;
 			break;
 		case 0x22:
-			shld(opcode);
+			shld(state, opcode);
 			state->pc += 2;
 			break;
 		case 0x0a:
 		case 0x1a:
-			ldax(opcode);
+			ldax(state, opcode);
 			break;
 		case 0x02:
 		case 0x12:
-			stax(opcode);
+			stax(state, opcode);
 			break;
 		case 0xeb:
-			xchg(opcode);
+			xchg(state, opcode);
 			break;
         case 0xc5:
         case 0xd5:
         case 0xe5:
         //case 0xf5: //PSW
-            push(*opcode);
+            push(state, *opcode);
             break;
         case 0xc1:
         case 0xd1:
         case 0xe1:
         //case 0xf5 //PSW
-            pop(*opcode);
+            pop(state, *opcode);
             break;
         case 0xf9:
-            sphl();
+            sphl(state);
             break;
         //case 0x76:
             //TODO: halt instruction.
@@ -800,475 +758,17 @@ void emulateOp(state8080 *state) {
 	}
 }
 
-uint16_t getMemOffset(state8080 *state) {
-	return (state->h<<8) | (state->l);
-}
 
-void addToA(state8080 *state, uint8_t value){
-	uint16_t answer = (uint16_t)state->a + (uint16_t)value;
-	setZFlag(state, answer);
-	setSFlag(state, answer);
-	setCYFlag(state, state->a, value, ADD);
-	setPFlag(state, answer);
-	state->a = answer & 0xff;
-	if(DEBUG) printf("Add result: $%02x\t", state->a);
-}
 
-void adcToA(state8080 *state, uint8_t value){
-	uint16_t answer = (uint16_t)state->a + (uint16_t)value;
-	answer += state->cc.cy;
-	setZFlag(state, answer);
-	setSFlag(state, answer);
-	setCYFlag(state, state->a, value, ADD);
-	setPFlag(state, answer);
-	state->a = answer & 0xff;
-	if(DEBUG) printf("Adc result: $%02x\t", state->a);
-}
 
-void subFromA(state8080 *state, uint8_t value){
-	uint16_t answer = (uint16_t)state->a - (uint16_t)value;
-	setZFlag(state, answer);
-	setSFlag(state, answer);
-	setPFlag(state, answer);
-	setCYFlag(state, state->a, value, SUB);
-	state->a = answer & 0xff;
-	if(DEBUG) printf("SUB result: $%02x\t", state->a);
-}
 
-void sbbFromA(state8080 *state, uint8_t value){
-	uint16_t answer = (uint16_t)state->a - (uint16_t)value;
-	answer -= (uint16_t)state->cc.cy;
-	setZFlag(state, answer);
-	setSFlag(state, answer);
-	setCYFlag(state, state->a, value, SUB);
-	setPFlag(state, answer);
-	state->a = answer & 0xff;
-	if(DEBUG) printf("Sbb result: $%02x\t", state->a);
-}
 
-void decrRP(state8080 *state, registerPair_kind rp){
-	uint8_t *rh, *rl;
 
-	if (rp == SP) {
-		uint8_t hi = (uint8_t)((state->sp & 0xff00) >> 8);
-		uint8_t lo = (uint8_t)(state->sp & 0x00ff);	
-		rh = &hi;
-		rl = &lo;
-	} else {
-		switch(rp) {
-			case BC: rh = &state->b; rl = &state->c; break;
-			case DE: rh = &state->d; rl = &state->e; break;
-			case HL: rh = &state->h; rl = &state->l; break;
-			case SP: break;
-		}
-	}
 
-	uint16_t temp = (uint16_t)*rl;
-	if (temp == 0x00) {
-		*rh -= 1;
-	}
-	*rl = (*rl - 1) & 0xff;
-}
-
-void addRPtoHL(state8080 *state, registerPair_kind rp) {
-	uint32_t rp1;
-	uint32_t rp2 = (state->h << 8) | state->l;
-	switch(rp) {
-		case BC:
-			rp1 = (state->b << 8) | state->c;
-			break;
-		case DE:
-			rp1 = (state->d << 8) | state->e;
-			break;
-		case HL:
-		default:
-			rp1 = (state->h << 8) | state->l;
-			break;
-	}
-	uint32_t answer = rp1 + rp2;
-	state->cc.cy = answer > 0xffff;
-	state->h = (answer >> 8) & 0xff;
-	state->l = answer & 0xff;
-}
-
-void daa(state8080 *state) {
-    if ((state->a & 0x0f) > 9 || state->cc.ac) {
-        state->a += 6;
-    }
-    if ((state->a >> 4) > 9 || state->cc.cy) {
-        uint16_t res = (uint16_t) state->a + 0x60;
-        setZFlag(state, res);
-        setSFlag(state, res);
-        setCYFlag(state, state->a, 0x60, ADD);
-        setPFlag(state, res);
-        state->a = res & 0xff;
-    }
-}
-
-void jmp(state8080 *state, uint8_t *opcode) {
-    state->pc = (opcode[2] << 8) | (opcode[1]);
-}
-
-void call(state8080 *state, uint8_t *opcode) {
-    uint16_t ret = state->pc + 2;
-    state->memory[state->sp-1] = (ret >> 8) & 0xff;
-    state->memory[state->sp-2] = (ret >> 8) & 0xff;
-    state->sp -= 2;
-    jmp(state, opcode);
-}
-
-void ret(state8080 *state) {
-    uint8_t retAddrLo = state->memory[state->sp];
-    uint8_t retAddrHi = state->memory[state->sp+1];
-    state->pc = (retAddrHi << 8) | retAddrLo;
-    state->pc += 2;
-}
-
-void rst(state8080 *state, uint8_t num) {
-    state->memory[state->sp-1] = (state->pc >> 8) & 0xff;
-    state->memory[state->sp-2] = (state->pc) & 0xff;
-    state->sp -= 2;
-    //multiply by 8.... probably a pre-optimization
-    state->pc = num << 3 & 0x0038;
-}
-
-void pchl(state8080 *state) {
-    state->pc = getMemOffset(state);
-}
-
-void ana(state8080 *state, uint8_t opcode) {
-    switch (opcode) {
-        case 0xa0:
-            if (DEBUG) printf("ANA B\t");
-            state->a = state->a & state->b;
-            break;
-        case 0xa1:
-            if (DEBUG) printf("ANA C\t");
-            state->a = state->a & state->c;
-            break;
-        case 0xa2:
-            if (DEBUG) printf("ANA D\t");
-            state->a = state->a & state->d;
-            break;
-        case 0xa3:
-            if (DEBUG) printf("ANA E\t");
-            state->a = state->a & state->e;
-            break;
-        case 0xa4:
-            if (DEBUG) printf("ANA H\t");
-            state->a = state->a & state->h;
-            break;
-        case 0xa5:
-            if (DEBUG) printf("ANA L\t");
-            state->a = state->a & state->l;
-            break;
-        case 0xa6:
-            if (DEBUG) printf("ANA M\t");
-            state->a = state->a & state->memory[getMemOffset(state)];
-            break;
-        case 0xa7:
-            if (DEBUG) printf("ANA A\t");
-            state->a = state->a & state->a;
-            break;
-    }
-    setZFlag(state, state->a);
-    setSFlag(state, state->a);
-    state->cc.cy = 0; //always clear CY
-    setPFlag(state, state->a);
-
-    if (DEBUG) printf("ana result: #$%02x\n", state->a);
-}
-
-void ani(state8080 *state, uint8_t *opcode) {
-    if (DEBUG) printf("ANI $%02x\t", opcode[1]);
-    uint8_t answer = state->a & opcode[1];
-    setZFlag(state, answer); 
-    setSFlag(state, answer);
-    setPFlag(state, answer);
-    state->cc.cy = 0;
-    state->a = answer;
-    if (DEBUG) printf("ANI result: $%02x\n", state->a);
-}
-
-void xra(state8080 *state, uint8_t opcode) {
-    if (DEBUG) printf("XRA\t");
-    int regno = opcode & 0x07;
-    register_kind reg = getRegFromNumber(regno);
-    uint8_t regval = getRegVal(state, reg);
-    uint8_t answer = state->a ^ regval;
-    setZFlag(state, answer);
-    setSFlag(state, answer);
-    setPFlag(state, answer);
-    state->cc.cy = 0;
-    state->a = answer;
-    if (DEBUG) printf("XRA result: #$%02x\n", state->a);
-}
-
-void xri(state8080 *state, uint8_t *opcode) {
-    uint8_t imm = opcode[1];
-    if (DEBUG) printf("XRI #$%02x\t", imm);
-    uint8_t answer = state->a ^ imm;
-    setZFlag(state, answer);
-    setSFlag(state, answer);
-    setPFlag(state, answer);
-    state->cc.cy = 0;
-    state->cc.ac = 0;
-    state->a = answer;
-    if (DEBUG) printf("XRI result: #$%02x\n", state->a);
-}
-
-void ora(state8080 *state, uint8_t opcode) {
-    if (DEBUG) printf("ORA\t");
-    int regno = opcode & 0x07;
-    register_kind reg = getRegFromNumber(regno);
-    uint8_t regval = getRegVal(state, reg);
-    uint8_t answer = state->a | regval;
-    setZFlag(state, answer);
-    setSFlag(state, answer);
-    setPFlag(state, answer);
-    state->cc.cy = 0;
-    state->cc.ac = 0;
-    state->a = answer;
-    if (DEBUG) printf("ORA result: #$%02x\n", state->a);
-}
-
-void ori(state8080 *state, uint8_t *opcode) {
-    uint8_t imm = opcode[1];
-    if (DEBUG) printf("ORI #$%02x\t", imm);
-    uint8_t answer = state->a | imm;
-    setZFlag(state, answer);
-    setSFlag(state, answer);
-    setPFlag(state, answer);
-    state->cc.cy = 0;
-    state->cc.ac = 0;
-    state->a = answer;
-    if (DEBUG) printf("ORI result: #$%02x\n", state->a);
-}
-
-void cmp(state8080 *state, uint8_t opcode) {
-    if (DEBUG) printf("CMP\t");
-    int regno = opcode & 0x07;
-    register_kind reg = getRegFromNumber(regno);
-    uint8_t regval = getRegVal(state, reg);
-    uint8_t answer = state->a - regval;
-    setZFlag(state, answer);
-    setSFlag(state, answer);
-    setPFlag(state, answer);
-    setCYFlag(state, state->a, regval, SUB);
-}
-
-void cpi(state8080 *state, uint8_t *opcode) {
-    uint8_t imm = opcode[1];
-    if (DEBUG) printf("CPI #$%02x\n", imm);
-    uint8_t answer = state->a - imm;
-    setZFlag(state, answer);
-    setSFlag(state, answer);
-    setPFlag(state, answer);
-    setCYFlag(state, state->a, imm, SUB);
-}
-
-void rlc(state8080 *state, uint8_t opcode) {
-    if (DEBUG) printf("RLC\t");
-    uint8_t prevHiBit = (state->a & 0x80) >> 7;
-    uint8_t answer = state->a << 1;
-    answer = answer | prevHiBit;
-    state->cc.cy = prevHiBit;
-    state->a = answer;
-    if (DEBUG) printf("RLC result: #$%02x\n", state->a);
-}
-
-void rrc(state8080 *state, uint8_t opcode) {
-    if (DEBUG) printf("RRC\t");
-    uint8_t prevLoBit = (state->a & 0x01);
-    uint8_t answer = state->a >> 1;
-    answer = (prevLoBit << 7) | answer;
-    state->cc.cy = prevLoBit;
-    state->a = answer;
-    if (DEBUG) printf("RRC result: #$%02x\n", state->a);
-}
-
-void ral(state8080 *state, uint8_t opcode) {
-    if (DEBUG) printf("RAL\t");
-    uint8_t prevHiBit = (state->a & 0x80) >> 7;
-    uint8_t answer = state->a << 1;
-    answer = answer | state->cc.cy;
-    state->cc.cy = prevHiBit;
-    state->a = answer;
-    if (DEBUG) printf("RAL result: #$%02x\n", state->a);
-}
-
-void rar(state8080 *state, uint8_t opcode) {
-    if (DEBUG) printf("RAR\t");
-    uint8_t prevLoBit = state->a & 0x01;
-    uint8_t answer = state->a >> 1;
-    answer = answer | state->cc.cy;
-    state->cc.cy = prevLoBit;
-    state->a = answer;
-    if (DEBUG) printf("RAR result: #$%02x\n", state->a);
-}
-
-void cma(state8080 *state) {
-    if (DEBUG) printf("CMA\t");
-    uint8_t answer = ~(state->a);
-    state->a = answer;
-    if (DEBUG) printf("CMA result: #$%02x\n", state->a);
-}
-
-void cmc(state8080 *state) {
-    if (DEBUG) printf("CMC\t");
-    state->cc.cy = ~state->cc.cy;
-    if (DEBUG) printf("CMC result: #$%02x\n", state->cc.cy);
-}
-
-void stc(state8080 *state) {
-    if (DEBUG) printf("STC\t");
-    state->cc.cy = 1;
-    if (DEBUG) printf("STC result: #$%02x\n", state->cc.cy);
-}
-
-void mov(state8080 *state, uint8_t opcode) {
-    if (DEBUG) printf("MOV\t");
-    int dregno = (opcode >> 3) & 0x07;
-    int sregno = opcode & 0x07;
-	printf("dreg: %d", dregno);
-	printf("sreg: %d\n", sregno);
-    register_kind dreg = getRegFromNumber(dregno);
-    register_kind sreg = getRegFromNumber(sregno);
-    if (DEBUG) printf("%s to %s\n", getRegLabel(sreg), getRegLabel(dreg));
-    uint8_t val = getRegVal(state, sreg);
-    setRegVal(state, dreg, val);
-}
-
-void mvi(state8080* state, uint8_t *opcode) {
-	if (DEBUG) printf("MVI\t");
-	uint8_t dregno = (*opcode >> 3) & 0x07;
-	register_kind dreg = getRegFromNumber(dregno);
-	uint8_t val = opcode[1];
-	if (DEBUG) printf("#$%02x to %s\n", val, getRegLabel(dreg));
-	setRegVal(state, dreg, val);
-}
-
-void lxi(state8080* state, uint8_t *opcode) {
-	if (DEBUG) printf("LXI\t");
-	uint8_t regPairNo = (*opcode >> 4) & 0x03;
-	uint16_t val = (opcode[2] << 8) | opcode[1];
-	registerPair_kind rp = getRPFromNumber(regPairNo);
-	setRPVal(rp, val);
-	if (DEBUG) printf("result: #$%04x\n", getRPVal(rp));
-}
-
-void lda(state8080* state, uint8_t *opcode) {
-	if (DEBUG) printf("LDA\t");
-	uint16_t addr = (opcode[2] << 8) | opcode[1];
-	state->a = state->memory[addr];
-	if (DEBUG) printf("result: #$%02x\n", state->a);
-}
-
-void sta(state8080* state, uint8_t *opcode) {
-	if (DEBUG) printf("STA\t");
-	uint16_t addr = (opcode[2] << 8) | opcode[1];
-	if (DEBUG) printf("to ($%04x)\n", addr);
-	state->memory[addr] = state->a;
-}
-
-void lhld(state8080* state, uint8_t *opcode) {
-	if (DEBUG) printf("LHLD\t");
-	uint16_t addr = (opcode[2] << 8) | opcode[1];
-	if (DEBUG) printf("($%04x)\n", addr);
-	state->h = state->memory[addr + 1];
-	state->l = state->memory[addr];
-}
-
-void shld(state8080* state, uint8_t *opcode) {
-	if (DEBUG) printf("SHLD\t");
-	uint16_t addr = (opcode[2] << 8) | opcode[1];
-	if (DEBUG) printf("($%04x)\n", addr);
-	state->memory[addr + 1] = state->h;
-	state->memory[addr] = state->l;
-}
-
-void ldax(state8080* state, uint8_t *opcode) {
-	if (DEBUG) printf("LDAX\t");
-	uint8_t regno = (*opcode) >> 4 & 0x03;
-	registerPair_kind rp = getRPFromNumber(regno);
-	uint16_t addr;
-	switch (rp) {
-		case BC:
-			addr = (state->b << 8) | state->c;
-			break;
-		case DE:
-			addr = (state->d << 8) | state->e;
-			break;
-		default:
-			invalidInstr();
-			break;
-	}
-
-	state->a = state->memory[addr];
-	if (DEBUG) printf("result: #$%02x\n", state->a);
-}
-
-void stax(state8080* state, uint8_t *opcode) {
-	if (DEBUG) printf("STAX\t");
-	uint8_t regno = (*opcode) >> 4 & 0x03;
-	registerPair_kind rp = getRPFromNumber(regno);
-	uint16_t addr;
-	switch (rp) {
-		case BC:
-			addr = (state->b << 8) | state->c;
-			break;
-		case DE:
-			addr = (state->d << 8) | state->e;
-			break;
-		default:
-			invalidInstr();
-			break;
-	}
-
-	state->memory[addr] = state->a;
-	if (DEBUG) printf("result: #$%02x\n", state->memory[addr]);
-}
-
-void xchg(state8080* state, uint8_t *opcode) {
-	if (DEBUG) printf("XCHG\n");
-	uint8_t temp = state->h;
-	state->h = state->d;
-	state->d = temp;
-
-	temp = state->l;
-	state->l = state->e;
-	state->e = temp;
-}
-
-void push(state8080* state, uint8_t opcode) {
-    if (DEBUG) printf("PUSH\t");
-    uint8_t rpNo = (opcode >> 4) & 0x03;
-    registerPair_kind rp = getRPFromNumber(rpNo);
-    if (DEBUG) printf("%s\n", getRPLabel(rpNo));
-    uint16_t rpVal = getRPVal(rp);
-    state->memory[state->sp - 1] = (uint8_t)(rpVal >> 8);
-    state->memory[state->sp - 2] = (uint8_t)rpVal;
-    state->sp -= 2;
-}
-
-void pop(state8080* state, uint8_t opcode) {
-    if (DEBUG) printf("POP\t");
-    uint8_t rpNo = (opcode >> 4) & 0x03;
-    registerPair_kind rp = getRPFromNumber(rpNo);
-    if (DEBUG) printf("%s\n", getRPLabel(rpNo));
-    uint8_t valHi = state->memory[state->sp + 1];
-    uint8_t valLo = state->memory[state->sp];
-    setRPVal(rp, (valHi << 8) | valLo);
-    state->sp += 2;
-}
-
-void sphl(state8080* state) {
-    state->sp = (state->h << 8) | state->l;
-}
 
 int main(int argc, char **argv) {
 	state8080 state1 = {0};
-    state = &state1;
+    state8080 *state = &state1;
 
 	if (argc > 2) {
 		if (strcmp(argv[1], "-d") == 0){

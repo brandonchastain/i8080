@@ -1,0 +1,10 @@
+void mov(state8080*, uint8_t);
+void mvi(state8080*, uint8_t*);
+void lxi(state8080*, uint8_t*);
+void lda(state8080*, uint8_t*);
+void sta(state8080*, uint8_t*);
+void lhld(state8080*, uint8_t*);
+void shld(state8080*, uint8_t*);
+void ldax(state8080*, uint8_t*);
+void stax(state8080*, uint8_t*);
+void xchg(state8080*, uint8_t*);

@@ -1,0 +1,15 @@
+void ana(state8080*, uint8_t);
+void ani(state8080*, uint8_t*);
+void xra(state8080*, uint8_t);
+void xri(state8080*, uint8_t*);
+void ora(state8080*, uint8_t);
+void ori(state8080*, uint8_t*);
+void cmp(state8080*, uint8_t);
+void cpi(state8080*, uint8_t*);
+void rlc(state8080*, uint8_t);
+void rrc(state8080*, uint8_t);
+void ral(state8080*, uint8_t);
+void rar(state8080*, uint8_t);
+void cma(state8080*);
+void cmc(state8080*);
+void stc(state8080*);
