@@ -763,14 +763,6 @@ void emulateOp(state8080 *state) {
 	}
 }
 
-
-
-
-
-
-
-
-
 int main(int argc, char **argv) {
 	state8080 state1 = {0};
     state8080 *state = &state1;
