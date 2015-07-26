@@ -4,47 +4,13 @@
 #include <string.h>
 
 #include "disassembler.h"
+#include "globals.h"
+#include "util.h"
 
-#define PRINT_DEBUG 1
-#define DEBUG (PRINT_DEBUG && !isStepMode)
+register_kind regs[9] = {B, C, D, E, H, L, M, A};
+registerPair_kind rps[4] = {BC, DE, HL, SP};
+uint8_t isStepMode = 0;
 
-typedef struct conditionCodes {
-	uint8_t z:1; //zero
-	uint8_t s:1; //sign, 1 if -, 0 if +
-	uint8_t p:1; //parity, 1 if even, 0 if odd
-	uint8_t cy:1; //carry
-	uint8_t ac:1; //not implemented, not used by Space Invaders
-	uint8_t   :3; //padding
-} conditionCodes;
-
-typedef struct state8080 {
-	uint8_t a;
-	uint8_t b;
-	uint8_t c;
-	uint8_t d;
-	uint8_t e;
-	uint8_t h;
-	uint8_t l;
-	uint16_t sp;
-	uint16_t pc;
-	uint8_t *memory;
-	uint16_t memSize;
-	struct conditionCodes cc;
-	uint8_t int_enable;
-} state8080;
-
-typedef enum {ADD, SUB} carry_kind;
-typedef enum {BC, DE, HL, SP} registerPair_kind;
-typedef enum {A, B, C, D, E, H, L, M} register_kind;
-
-static register_kind regs[9] = {B, C, D, E, H, L, M, A};
-static registerPair_kind rps[4] = {BC, DE, HL, SP};
-static uint8_t isStepMode = 0;
-static state8080 *state = NULL;
-
-//emulating operations
-void unimplementedInstr(state8080*);
-void invalidInstr();
 void emulateOp(state8080*);
 
 //operations
@@ -80,57 +46,19 @@ void cmc(state8080*);
 void stc(state8080*);
 //data transfer
 void mov(state8080*, uint8_t);
-void mvi(uint8_t*);
-void lxi(uint8_t*);
-void lda(uint8_t*);
-void sta(uint8_t*);
-void lhld(uint8_t*);
-void shld(uint8_t*);
-void ldax(uint8_t*);
-void stax(uint8_t*);
-void xchg(uint8_t*);
+void mvi(state8080*, uint8_t*);
+void lxi(state8080*, uint8_t*);
+void lda(state8080*, uint8_t*);
+void sta(state8080*, uint8_t*);
+void lhld(state8080*, uint8_t*);
+void shld(state8080*, uint8_t*);
+void ldax(state8080*, uint8_t*);
+void stax(state8080*, uint8_t*);
+void xchg(state8080*, uint8_t*);
 //stack
-void push(uint8_t);
-void pop(uint8_t);
-void sphl();
-
-//condition flags
-void setZFlag(state8080*, uint16_t);
-void setSFlag(state8080*, uint16_t);
-void setCYFlag(state8080*, uint8_t, uint8_t, carry_kind);
-void setPFlag(state8080*, uint16_t);
-
-//printing
-void printFlags(state8080*);
-void debugPrint(state8080*);
-void printMem();
-
-//utility
-uint16_t getMemOffset(state8080*);
-register_kind getRegFromNumber(uint8_t);
-registerPair_kind getRPFromNumber(uint8_t);
-uint8_t getRegVal(state8080*, register_kind);
-void setRegVal(state8080*, register_kind, uint8_t);
-char* getRegLabel(register_kind);
-uint16_t getRPVal(registerPair_kind);
-void setRPVal(registerPair_kind, uint16_t);
-char* getRPLabel(registerPair_kind);
-
-void unimplementedInstr(state8080 *state) {
-	state->pc -= 1;
-	printf("Error: Unimplemented instruction $%02x @ address $%04x\n", 
-            state->memory[state->pc], state->pc);
-    free(state->memory);
-    exit(1);
-}
-
-void invalidInstr() {
-    state->pc -= 1;
-    printf("Error: Invalid instruction $%02x @ address $%04x\n",
-            state->memory[state->pc], state->pc);
-    free(state->memory);
-    exit(1);
-}
+void push(state8080*, uint8_t);
+void pop(state8080*, uint8_t);
+void sphl(state8080*);
 
 void emulateOp(state8080 *state) {
 	uint16_t answer;
@@ -1211,7 +1139,7 @@ void mov(state8080 *state, uint8_t opcode) {
     setRegVal(state, dreg, val);
 }
 
-void mvi(uint8_t *opcode) {
+void mvi(state8080* state, uint8_t *opcode) {
 	if (DEBUG) printf("MVI\t");
 	uint8_t dregno = (*opcode >> 3) & 0x07;
 	register_kind dreg = getRegFromNumber(dregno);
@@ -1220,7 +1148,7 @@ void mvi(uint8_t *opcode) {
 	setRegVal(state, dreg, val);
 }
 
-void lxi(uint8_t *opcode) {
+void lxi(state8080* state, uint8_t *opcode) {
 	if (DEBUG) printf("LXI\t");
 	uint8_t regPairNo = (*opcode >> 4) & 0x03;
 	uint16_t val = (opcode[2] << 8) | opcode[1];
@@ -1229,21 +1157,21 @@ void lxi(uint8_t *opcode) {
 	if (DEBUG) printf("result: #$%04x\n", getRPVal(rp));
 }
 
-void lda(uint8_t *opcode) {
+void lda(state8080* state, uint8_t *opcode) {
 	if (DEBUG) printf("LDA\t");
 	uint16_t addr = (opcode[2] << 8) | opcode[1];
 	state->a = state->memory[addr];
 	if (DEBUG) printf("result: #$%02x\n", state->a);
 }
 
-void sta(uint8_t *opcode) {
+void sta(state8080* state, uint8_t *opcode) {
 	if (DEBUG) printf("STA\t");
 	uint16_t addr = (opcode[2] << 8) | opcode[1];
 	if (DEBUG) printf("to ($%04x)\n", addr);
 	state->memory[addr] = state->a;
 }
 
-void lhld(uint8_t *opcode) {
+void lhld(state8080* state, uint8_t *opcode) {
 	if (DEBUG) printf("LHLD\t");
 	uint16_t addr = (opcode[2] << 8) | opcode[1];
 	if (DEBUG) printf("($%04x)\n", addr);
@@ -1251,7 +1179,7 @@ void lhld(uint8_t *opcode) {
 	state->l = state->memory[addr];
 }
 
-void shld(uint8_t *opcode) {
+void shld(state8080* state, uint8_t *opcode) {
 	if (DEBUG) printf("SHLD\t");
 	uint16_t addr = (opcode[2] << 8) | opcode[1];
 	if (DEBUG) printf("($%04x)\n", addr);
@@ -1259,7 +1187,7 @@ void shld(uint8_t *opcode) {
 	state->memory[addr] = state->l;
 }
 
-void ldax(uint8_t *opcode) {
+void ldax(state8080* state, uint8_t *opcode) {
 	if (DEBUG) printf("LDAX\t");
 	uint8_t regno = (*opcode) >> 4 & 0x03;
 	registerPair_kind rp = getRPFromNumber(regno);
@@ -1280,7 +1208,7 @@ void ldax(uint8_t *opcode) {
 	if (DEBUG) printf("result: #$%02x\n", state->a);
 }
 
-void stax(uint8_t *opcode) {
+void stax(state8080* state, uint8_t *opcode) {
 	if (DEBUG) printf("STAX\t");
 	uint8_t regno = (*opcode) >> 4 & 0x03;
 	registerPair_kind rp = getRPFromNumber(regno);
@@ -1301,7 +1229,7 @@ void stax(uint8_t *opcode) {
 	if (DEBUG) printf("result: #$%02x\n", state->memory[addr]);
 }
 
-void xchg(uint8_t *opcode) {
+void xchg(state8080* state, uint8_t *opcode) {
 	if (DEBUG) printf("XCHG\n");
 	uint8_t temp = state->h;
 	state->h = state->d;
@@ -1312,7 +1240,7 @@ void xchg(uint8_t *opcode) {
 	state->e = temp;
 }
 
-void push(uint8_t opcode) {
+void push(state8080* state, uint8_t opcode) {
     if (DEBUG) printf("PUSH\t");
     uint8_t rpNo = (opcode >> 4) & 0x03;
     registerPair_kind rp = getRPFromNumber(rpNo);
@@ -1323,7 +1251,7 @@ void push(uint8_t opcode) {
     state->sp -= 2;
 }
 
-void pop(uint8_t opcode) {
+void pop(state8080* state, uint8_t opcode) {
     if (DEBUG) printf("POP\t");
     uint8_t rpNo = (opcode >> 4) & 0x03;
     registerPair_kind rp = getRPFromNumber(rpNo);
@@ -1334,193 +1262,8 @@ void pop(uint8_t opcode) {
     state->sp += 2;
 }
 
-void sphl() {
+void sphl(state8080* state) {
     state->sp = (state->h << 8) | state->l;
-}
-
-void setZFlag(state8080 *state, uint16_t answer) {
-	state->cc.z = !(answer & 0xff);
-}
-
-void setSFlag(state8080 *state, uint16_t answer) {
-	state->cc.s = answer & 0x80;
-}
-
-void setCYFlag(state8080 *state, uint8_t a, uint8_t b, carry_kind kind) {
-	//TODO: This might be incorrect.
-	//This looks useful: http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt
-	if (kind == ADD) {
-		uint16_t answer = (uint16_t)a + (uint16_t)b;
-		state->cc.cy = answer > 0xff;
-	} else {
-		state->cc.cy = a < b;
-	}
-}
-
-void setPFlag(state8080 *state, uint16_t answer) {
-	state->cc.p = ~(answer & 0x01);
-}
-
-register_kind getRegFromNumber(uint8_t regno) {
-    register_kind reg = regs[regno];
-    return reg;
-}
-
-registerPair_kind getRPFromNumber(uint8_t regPairNo) {
-	if (regPairNo < 0 || regPairNo > 4) {
-		invalidInstr();
-	}
-	registerPair_kind rp = rps[regPairNo];
-	return rp;
-}
-
-
-uint8_t getRegVal(state8080 *state, register_kind reg) {
-    switch (reg) {
-        case A:
-            return state->a;
-        case B:
-            return state->b;
-        case C:
-            return state->c;
-        case D:
-            return state->d;
-        case E:
-            return state->e;
-        case H:
-            return state->h;
-        case L:
-            return state->l;
-        case M:
-            return state->memory[getMemOffset(state)];
-    }
-}
-
-uint16_t getRPVal(registerPair_kind rp) {
-	uint8_t hi;
-	uint8_t lo;
-	switch(rp) {
-		case BC: hi = state->b; lo = state->c; break;
-		case DE: hi = state->d; lo = state->e; break;
-		case HL: hi = state->h; lo = state->l; break;
-		case SP: hi = (state->sp & 0xff00) >> 8; lo = state->sp & 0x00ff; break;
-	}
-	return (uint16_t)((hi << 8) | lo);
-}
-
-void setRegVal(state8080 *state, register_kind reg, uint8_t val) {
-    switch (reg) {
-        case A:
-            state->a = val;
-            break;
-        case B:
-            state->b = val;
-            break;
-        case C:
-            state->c = val;
-            break;
-        case D:
-            state->d = val;
-            break;
-        case E:
-            state->e = val;
-            break;
-        case H:
-            state->h = val;
-            break;
-        case L:
-            state->l = val;
-            break;
-        case M:
-            state->memory[getMemOffset(state)] = val;
-            break;
-        default:
-            invalidInstr();
-            break;
-    }
-}
-
-void setRPVal(registerPair_kind rp, uint16_t val) {
-	if (rp == SP) {
-		state->sp = val;
-	} else {
-		uint8_t hi = (uint8_t)(val >> 8);
-		uint8_t lo = (uint8_t)(val & 0x00ff);
-		switch (rp) {
-			case BC:
-				state->b = hi;
-				state->c = lo;
-				break;
-			case DE:
-				state->d = hi;
-				state->e = lo;
-				break;
-			case HL:
-				state->h = hi;
-				state->l = lo;
-				break;
-			case SP: break;
-		}
-	}
-}
-
-char* getRegLabel(register_kind reg) {
-    switch (reg) {
-        case A:
-            return "a";
-        case B:
-            return "b";
-        case C:
-            return "c";
-        case D:
-            return "d";
-        case E:
-            return "e";
-        case H:
-            return "h";
-        case L:
-            return "l";
-        case M:
-            return "mem";
-        default:
-            invalidInstr();
-			return "-1";
-    }
-}
-
-char* getRPLabel(registerPair_kind rp) {
-    switch (rp) {
-        case BC: return "BC";
-        case DE: return "DE";
-        case HL: return "HL";
-        case SP: return "SP";
-        default:
-            invalidInstr();
-            return "-1";
-    }
-}
-
-void printFlags(state8080 *state) {
-	printf("\tZ:%1d S:%1d P:%1d CY:%1d\n", state->cc.z, state->cc.s, state->cc.p, state->cc.cy);
-}
-
-void printMem() {
-	printf("(HL): #$%02x\n", state->memory[(state->h << 8) | state->l]);
-	printf("(SP+1): #$%02x\n", state->memory[state->sp + 1]);
-    printf("(SP): #$%02x\n", state->memory[state->sp]);
-}
-
-void debugPrint(state8080 *state) {
-    printf("Regs:\n");
-    printf("\tA: $%02x\tSP:$%04x\n", state->a, state->sp);
-    printf("\tB: $%02x\tC: $%02x\n", state->b, state->c);
-    printf("\tD: $%02x\tE: $%02x\n", state->d, state->e);
-    printf("\tH: $%02x\tL: $%02x\n", state->h, state->l);
-    printf("Flags:\n");
-    printFlags(state);
-	printf("Mem:\n");
-	printMem();
-	printf("\n");
 }
 
 int main(int argc, char **argv) {
