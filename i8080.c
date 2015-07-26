@@ -91,6 +91,8 @@ void stax(uint8_t*);
 void xchg(uint8_t*);
 //stack
 void push(uint8_t);
+void pop(uint8_t);
+void sphl();
 
 //condition flags
 void setZFlag(state8080*, uint16_t);
@@ -850,8 +852,17 @@ void emulateOp(state8080 *state) {
         case 0xc5:
         case 0xd5:
         case 0xe5:
-        case 0xf5:
+        //case 0xf5: //PSW
             push(*opcode);
+            break;
+        case 0xc1:
+        case 0xd1:
+        case 0xe1:
+        //case 0xf5 //PSW
+            pop(*opcode);
+            break;
+        case 0xf9:
+            sphl();
             break;
         //case 0x76:
             //TODO: halt instruction.
@@ -1312,6 +1323,21 @@ void push(uint8_t opcode) {
     state->sp -= 2;
 }
 
+void pop(uint8_t opcode) {
+    if (DEBUG) printf("POP\t");
+    uint8_t rpNo = (opcode >> 4) & 0x03;
+    registerPair_kind rp = getRPFromNumber(rpNo);
+    if (DEBUG) printf("%s\n", getRPLabel(rpNo));
+    uint8_t valHi = state->memory[state->sp + 1];
+    uint8_t valLo = state->memory[state->sp];
+    setRPVal(rp, (valHi << 8) | valLo);
+    state->sp += 2;
+}
+
+void sphl() {
+    state->sp = (state->h << 8) | state->l;
+}
+
 void setZFlag(state8080 *state, uint16_t answer) {
 	state->cc.z = !(answer & 0xff);
 }
@@ -1480,7 +1506,8 @@ void printFlags(state8080 *state) {
 
 void printMem() {
 	printf("(HL): #$%02x\n", state->memory[(state->h << 8) | state->l]);
-	printf("(SP): #$%02x\n", state->memory[state->sp]);
+	printf("(SP+1): #$%02x\n", state->memory[state->sp + 1]);
+    printf("(SP): #$%02x\n", state->memory[state->sp]);
 }
 
 void debugPrint(state8080 *state) {
