@@ -741,12 +741,17 @@ void emulateOp(state8080 *state) {
         //case 0xf5: //PSW
             push(state, *opcode);
             break;
+        case 0xf5:
+        	pushPsw(state);
+        	break;
         case 0xc1:
         case 0xd1:
         case 0xe1:
-        //case 0xf5 //PSW
             pop(state, *opcode);
             break;
+         case 0xf1:
+         	popPsw(state);
+         	break;
         case 0xf9:
             sphl(state);
             break;
