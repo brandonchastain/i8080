@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
-#include "globals.h"
-#include "util.h"
+#include "../globals.h"
+#include "../util.h"
 
 void push(state8080* state, uint8_t opcode) {
     if (DEBUG) printf("PUSH\t");

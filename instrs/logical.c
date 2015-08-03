@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
-#include "globals.h"
-#include "util.h"
+#include "../globals.h"
+#include "../util.h"
 
 void ana(state8080 *state, uint8_t opcode) {
     switch (opcode) {

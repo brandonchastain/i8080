@@ -47,6 +47,7 @@ void debugPrint(state8080 *state) {
     printFlags(state);
 	printf("Mem:\n");
 	printMem(state);
+    printf("PC: $%04x\n", state->pc);
 	printf("\n");
 }
 

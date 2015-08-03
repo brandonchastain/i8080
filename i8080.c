@@ -6,11 +6,15 @@
 #include "globals.h"
 #include "util.h"
 
-#include "arithmetic.h"
-#include "branching.h"
-#include "logical.h"
-#include "dataTransfer.h"
-#include "stack.h"
+#include "instrs/arithmetic.h"
+#include "instrs/branching.h"
+#include "instrs/logical.h"
+#include "instrs/dataTransfer.h"
+#include "instrs/stack.h"
+
+#include "8080emu-first50.c"
+
+#define FOR_CPUDIAG 1
 
 register_kind regs[8] = {B, C, D, E, H, L, M, A};
 registerPair_kind rps[4] = {BC, DE, HL, SP};
@@ -784,17 +788,30 @@ int main(int argc, char **argv) {
 	state->memSize = fsize + 1024; //extra space for data storage
 	fseek(f, 0L, SEEK_SET);
 	uint8_t *buffer = (uint8_t *)calloc(1, state->memSize);
-	fread(buffer, fsize, 1, f);
+//	fread(buffer + 0x0100, fsize, 1, f);
+    fread(buffer, fsize, 1, f);
 	fclose(f);
 
-	state->memory = buffer;
+    state->memory = buffer;
 
-    while (state->pc < fsize) {
+    //state->memory[0] = 0xc3;
+    //state->memory[1] = 0;
+    //state->memory[2] = 0x01;
+
+    //state->memory[368] = 0x7;
+
+    //state->memory[0x59c] = 0xc3;
+    //state->memory[0x59d] = 0xc2;
+    //state->memory[0x59e] = 0x05;
+
+    //while (state->pc < fsize + 100) {
+    while (state->pc < state->memSize) {
 		disassemble((char *)state->memory, state->pc);
     	emulateOp(state);
         if (DEBUG) printFlags(state);
         if (isStepMode) {
 			debugPrint(state);
+            //checkOtherState(state);
 			printf("Press [Enter] to continue.\n");
             //wait for user to hit enter
 			fflush(stdin);

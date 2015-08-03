@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
-#include "globals.h"
-#include "util.h"
+#include "../globals.h"
+#include "../util.h"
 
 void addToA(state8080 *state, uint8_t value){
 	uint16_t answer = (uint16_t)state->a + (uint16_t)value;
